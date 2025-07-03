@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ttalk:*)",
+      "Bash(node:*)",
+      "Bash(ttask \"Fixed Node.js ES module issues, created working Claude SDK example with response extraction, updated documentation\")",
+      "Bash(find:*)"
+    ],
+    "deny": []
+  }
+}

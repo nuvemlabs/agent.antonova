@@ -3,9 +3,14 @@
   "version": "1.0.0",
   "description": "claude code personanlity",
   "main": "index.js",
+  "type": "module",
   "scripts": {
+    "start": "node index.js", 
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@anthropic-ai/claude-code": "^1.0.41"
+  }
 }

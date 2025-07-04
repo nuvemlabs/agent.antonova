@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  antonova-ssh:
+    build:
+      context: .
+      dockerfile: Dockerfile.ssh
+      args:
+        TZ: "${TZ:-America/Los_Angeles}"
+    container_name: antonova-ssh-dev
+    hostname: antonova-dev
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    ports:
+      - "2222:22"  # SSH access on host port 2222
+    volumes:
+      - ../:/workspace:delegated
+      - claude-code-bashhistory:/commandhistory
+      - claude-code-config:/home/node/.claude
+      - /var/run/docker.sock:/var/run/docker.sock  # Optional: for Docker-in-Docker
+    environment:
+      - NODE_OPTIONS=--max-old-space-size=4096
+      - CLAUDE_CONFIG_DIR=/home/node/.claude
+      - POWERLEVEL9K_DISABLE_GITSTATUS=true
+      - DEVCONTAINER=true
+    restart: unless-stopped
+    tty: true
+    stdin_open: true
+
+volumes:
+  claude-code-bashhistory:
+  claude-code-config:

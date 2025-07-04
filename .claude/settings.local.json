@@ -8,7 +8,9 @@
       "Bash(docker logs:*)",
       "Bash(docker exec:*)",
       "Bash(ssh:*)",
-      "Bash(make:*)"
+      "Bash(make:*)",
+      "Bash(gh:*)",
+      "Bash(ls:*)"
     ],
     "deny": []
   }

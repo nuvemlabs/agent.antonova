@@ -1,16 +1,30 @@
 {
-  "name": "antonova",
+  "name": "agent-antonova",
   "version": "1.0.0",
-  "description": "claude code personanlity",
+  "description": "Autonomous Claude Code agent with continuous development lifecycle",
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node index.js", 
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "dev": "node --inspect index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "agent": "node index.js",
+    "setup": "npm install && ./scripts/setup-labels.sh"
   },
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "autonomous",
+    "agent",
+    "claude-code",
+    "github",
+    "automation",
+    "continuous-development"
+  ],
+  "author": "nuvemlabs",
+  "license": "MIT",
   "dependencies": {
     "@anthropic-ai/claude-code": "^1.0.41"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }

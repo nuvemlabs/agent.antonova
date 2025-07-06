@@ -22,7 +22,8 @@
   "author": "nuvemlabs",
   "license": "MIT",
   "dependencies": {
-    "@anthropic-ai/claude-code": "^1.0.41"
+    "@anthropic-ai/claude-code": "^1.0.41",
+    "puppeteer": "^24.11.2"
   },
   "engines": {
     "node": ">=18.0.0"

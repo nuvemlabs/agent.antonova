@@ -1,2 +1,6 @@
 node_modules
-$HOME
+.wav
+.mp4
+.mp3
+**local.json
+\$HOME

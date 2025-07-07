@@ -1,0 +1,2 @@
+Create a simple Node.js script that demonstrates web scraping capabilities using built-in fetch API. The script should visit httpbin.org, fetch some data, and save the results to a JSON file.
+y

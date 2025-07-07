@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Antonova Agent Demonstration Story</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            margin-top: 20px;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .header {
+            text-align: center;
+            padding: 40px 0;
+            border-bottom: 3px solid #667eea;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            color: #764ba2;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            color: #666;
+            font-style: italic;
+        }
+
+        .chapter {
+            margin: 40px 0;
+            padding: 30px;
+            background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+            position: relative;
+        }
+
+        .chapter-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .chapter-title {
+            font-size: 1.8em;
+            color: #764ba2;
+            font-weight: bold;
+        }
+
+        .audio-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .audio-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            background: #667eea;
+            color: white;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .audio-btn:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        .audio-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .chapter-content {
+            font-size: 1.1em;
+            line-height: 1.8;
+            color: #444;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            border-left: 4px solid #667eea;
+        }
+
+        .json-output {
+            background: #1a202c;
+            color: #68d391;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.85em;
+            overflow-x: auto;
+            border: 1px solid #667eea;
+        }
+
+        .bullet-points {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .bullet-points ul {
+            margin-left: 20px;
+        }
+
+        .bullet-points li {
+            margin: 10px 0;
+            color: #2d3748;
+        }
+
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline-item {
+            margin: 20px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .timeline-step {
+            font-weight: bold;
+            color: #764ba2;
+            margin-bottom: 5px;
+        }
+
+        .result-box {
+            background: linear-gradient(135deg, #4ade80, #22c55e);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .result-box h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .footer {
+            text-align: center;
+            padding: 40px 0;
+            border-top: 3px solid #667eea;
+            margin-top: 40px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 The Antonova Agent Demonstration Story</h1>
+            <p>An Interactive Narrative of AI-Powered Automation</p>
+        </div>
+
+        <div class="chapter" id="chapter-1">
+            <div class="chapter-header">
+                <h2 class="chapter-title">Chapter 1: Discovery of the Agent</h2>
+                <div class="audio-controls">
+                    <button class="audio-btn" onclick="generateAudio(1)">🎙️ Generate Audio</button>
+                    <button class="audio-btn" onclick="playAudio(1)" disabled id="play-1">▶️ Play</button>
+                    <button class="audio-btn" onclick="stopAudio(1)" disabled id="stop-1">⏹️ Stop</button>
+                </div>
+            </div>
+            <div class="chapter-content">
+                <p>In the depths of a developer's repository lay a mysterious project called "Antonova" - a Claude Code agent demonstration that promised to showcase the future of interactive AI automation. Like archaeologists uncovering ancient secrets, we began our exploration.</p>
+                
+                <div class="bullet-points">
+                    <h4>What We Discovered:</h4>
+                    <ul>
+                        <li><strong>Architecture</strong>: Node.js CLI tool powered by Claude Code SDK</li>
+                        <li><strong>Workflow</strong>: Two-phase process - plan generation, then user approval and execution</li>
+                        <li><strong>Purpose</strong>: Demonstrate real-world AI automation capabilities</li>
+                        <li><strong>Security</strong>: Plan-before-execute pattern ensures user control</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="chapter" id="chapter-2">
+            <div class="chapter-header">
+                <h2 class="chapter-title">Chapter 2: The Investigation Begins</h2>
+                <div class="audio-controls">
+                    <button class="audio-btn" onclick="generateAudio(2)">🎙️ Generate Audio</button>
+                    <button class="audio-btn" onclick="playAudio(2)" disabled id="play-2">▶️ Play</button>
+                    <button class="audio-btn" onclick="stopAudio(2)" disabled id="stop-2">⏹️ Stop</button>
+                </div>
+            </div>
+            <div class="chapter-content">
+                <p>Our detective work revealed the inner workings of this digital agent. The examination of package.json and index.js files unveiled a sophisticated system designed for interactive automation.</p>
+
+                <div class="code-block">
+// Core Antonova Architecture
+import { query } from "@anthropic-ai/claude-code";
+
+async function getPlanFromClaude(userPrompt) {
+  for await (const message of query({
+    prompt: userPrompt,
+    options: {
+      permissionMode: 'plan',     // Plan-only mode
+      maxTurns: 1                 // Single planning turn
+    }
+  })) {
+    // Process planning response...
+  }
+}
+
+async function executeWithClaude(userPrompt) {
+  for await (const message of query({
+    prompt: userPrompt,
+    options: {
+      permissionMode: 'acceptEdits',  // Full execution mode
+      maxTurns: 10                    // Multiple execution turns
+    }
+  })) {
+    // Process execution response...
+  }
+}
+                </div>
+            </div>
+        </div>
+
+        <div class="chapter" id="chapter-3">
+            <div class="chapter-header">
+                <h2 class="chapter-title">Chapter 3: The Demonstration Unfolds</h2>
+                <div class="audio-controls">
+                    <button class="audio-btn" onclick="generateAudio(3)">🎙️ Generate Audio</button>
+                    <button class="audio-btn" onclick="playAudio(3)" disabled id="play-3">▶️ Play</button>
+                    <button class="audio-btn" onclick="stopAudio(3)" disabled id="stop-3">⏹️ Stop</button>
+                </div>
+            </div>
+            <div class="chapter-content">
+                <p>With the agent's capabilities understood, we orchestrated a live demonstration. The task: create a web automation script that would showcase real-world data collection and processing.</p>
+
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-step">1. Project Analysis</div>
+                        <p>Examined the Antonova codebase structure and identified key components</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-step">2. Environment Check</div>
+                        <p>Investigated Puppeteer availability and discovered MCP integration options</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-step">3. Script Creation</div>
+                        <p>Built web-scraper-demo.js using Node.js fetch API for HTTP automation</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-step">4. Live Execution</div>
+                        <p>Ran the demonstration script with real network requests</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chapter" id="chapter-4">
+            <div class="chapter-header">
+                <h2 class="chapter-title">Chapter 4: The Magic Happens</h2>
+                <div class="audio-controls">
+                    <button class="audio-btn" onclick="generateAudio(4)">🎙️ Generate Audio</button>
+                    <button class="audio-btn" onclick="playAudio(4)" disabled id="play-4">▶️ Play</button>
+                    <button class="audio-btn" onclick="stopAudio(4)" disabled id="stop-4">⏹️ Stop</button>
+                </div>
+            </div>
+            <div class="chapter-content">
+                <p>The moment of truth arrived as the agent executed its automation script. In real-time, we witnessed the digital transformation of instructions into working code and actual data.</p>
+
+                <div class="code-block">
+// The Web Scraper Demo Script That Actually Ran
+async function webScraperDemo() {
+    console.log('🌐 Starting web scraper demonstration...');
+    
+    // Fetch IP information
+    const ipResponse = await fetch('https://httpbin.org/ip');
+    const ipData = await ipResponse.json();
+    
+    // Fetch user agent information  
+    const uaResponse = await fetch('https://httpbin.org/user-agent');
+    const uaData = await uaResponse.json();
+    
+    // Fetch headers information
+    const headersResponse = await fetch('https://httpbin.org/headers');
+    const headersData = await headersResponse.json();
+    
+    // Combine and save results
+    const scrapedData = {
+        timestamp: new Date().toISOString(),
+        ip: ipData,
+        userAgent: uaData,
+        headers: headersData,
+        scraper: 'Antonova Agent Demo'
+    };
+    
+    await writeFile(`scraped-data-${Date.now()}.json`, 
+                   JSON.stringify(scrapedData, null, 2));
+}
+                </div>
+            </div>
+        </div>
+
+        <div class="chapter" id="chapter-5">
+            <div class="chapter-header">
+                <h2 class="chapter-title">Chapter 5: The Revelation</h2>
+                <div class="audio-controls">
+                    <button class="audio-btn" onclick="generateAudio(5)">🎙️ Generate Audio</button>
+                    <button class="audio-btn" onclick="playAudio(5)" disabled id="play-5">▶️ Play</button>
+                    <button class="audio-btn" onclick="stopAudio(5)" disabled id="stop-5">⏹️ Stop</button>
+                </div>
+            </div>
+            <div class="chapter-content">
+                <p>Success! The agent had not only planned and executed the task but delivered tangible results. Here's the actual data that was collected during our demonstration:</p>
+
+                <div class="json-output">
+{
+  "timestamp": "2025-07-06T03:31:15.704Z",
+  "ip": {
+    "origin": "119.224.84.130"
+  },
+  "userAgent": {
+    "user-agent": "node"
+  },
+  "headers": {
+    "headers": {
+      "Accept": "*/*",
+      "Accept-Encoding": "br, gzip, deflate",
+      "Accept-Language": "*",
+      "Host": "httpbin.org",
+      "Sec-Fetch-Mode": "cors",
+      "User-Agent": "node",
+      "X-Amzn-Trace-Id": "Root=1-6869ee03-08a8c8dd141ce25f0412c509"
+    }
+  },
+  "scraper": "Antonova Agent Demo"
+}
+                </div>
+
+                <div class="result-box">
+                    <h3>🎯 Demonstration Results</h3>
+                    <p><strong>IP Address Detected:</strong> 119.224.84.130</p>
+                    <p><strong>User Agent:</strong> node</p>
+                    <p><strong>Execution Time:</strong> 2025-07-06 at 03:31:15 UTC</p>
+                    <p><strong>Status:</strong> ✅ Complete Success</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="chapter" id="chapter-6">
+            <div class="chapter-header">
+                <h2 class="chapter-title">Epilogue: What We Learned</h2>
+                <div class="audio-controls">
+                    <button class="audio-btn" onclick="generateAudio(6)">🎙️ Generate Audio</button>
+                    <button class="audio-btn" onclick="playAudio(6)" disabled id="play-6">▶️ Play</button>
+                    <button class="audio-btn" onclick="stopAudio(6)" disabled id="stop-6">⏹️ Stop</button>
+                </div>
+            </div>
+            <div class="chapter-content">
+                <p>The Antonova agent demonstration proved that AI-powered automation is not just theoretical—it's practical, controllable, and immediately useful. Through careful planning and execution, complex tasks can be automated while maintaining human oversight.</p>
+
+                <div class="bullet-points">
+                    <h4>Key Capabilities Demonstrated:</h4>
+                    <ul>
+                        <li><strong>Code Generation</strong>: Created functional web automation scripts</li>
+                        <li><strong>Network Operations</strong>: Performed real HTTP requests and data collection</li>
+                        <li><strong>File Management</strong>: Generated timestamped output files with structured data</li>
+                        <li><strong>Error Handling</strong>: Robust execution with proper exception management</li>
+                        <li><strong>User Control</strong>: Plan-approve-execute workflow ensures safety</li>
+                        <li><strong>Real-time Feedback</strong>: Progress indicators and status updates</li>
+                    </ul>
+                </div>
+
+                <p>This narrative itself, powered by DeepGram's text-to-speech technology, represents the next evolution of interactive documentation—where stories can be both read and heard, creating immersive learning experiences.</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Generated by the Antonova Agent • Powered by Claude Code SDK • Narrated by DeepGram</p>
+            <p>🎙️ Experience the future of interactive AI automation</p>
+        </div>
+    </div>
+
+    <script src="narrative-audio.js"></script>
+</body>
+</html>

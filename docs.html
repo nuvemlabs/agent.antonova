@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Antonova Agent - Documentation</title>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(45deg, #f8f9fa, #e9ecef);
+            --accent-color: #667eea;
+            --text-dark: #2d3748;
+            --text-light: #4a5568;
+            --success-color: #48bb78;
+            --warning-color: #ed8936;
+            --error-color: #f56565;
+            --background-light: rgba(255, 255, 255, 0.95);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: var(--primary-gradient);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: var(--background-light);
+            margin-top: 20px;
+            margin-bottom: 20px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            text-align: center;
+            padding: 60px 0;
+            border-bottom: 3px solid var(--accent-color);
+            margin-bottom: 50px;
+            background: var(--secondary-gradient);
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(102,126,234,0.1) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .header h1 {
+            font-size: 3.5em;
+            color: var(--accent-color);
+            margin-bottom: 20px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header .subtitle {
+            font-size: 1.4em;
+            color: var(--text-light);
+            font-weight: 300;
+            margin-bottom: 30px;
+        }
+
+        .badges {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+
+        .badge {
+            background: var(--accent-color);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102,126,234,0.3);
+        }
+
+        .badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102,126,234,0.4);
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+            background: var(--secondary-gradient);
+            border-radius: 15px;
+            padding: 10px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            padding: 12px 25px;
+            border: none;
+            background: transparent;
+            color: var(--text-light);
+            cursor: pointer;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-tab:hover {
+            background: rgba(102,126,234,0.1);
+            color: var(--accent-color);
+        }
+
+        .nav-tab.active {
+            background: var(--accent-color);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102,126,234,0.3);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section {
+            margin: 40px 0;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-left: 5px solid var(--accent-color);
+        }
+
+        .section h2 {
+            color: var(--accent-color);
+            font-size: 2.2em;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .section h3 {
+            color: var(--text-dark);
+            font-size: 1.5em;
+            margin: 25px 0 15px 0;
+            font-weight: 600;
+        }
+
+        .code-block {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-color);
+            position: relative;
+        }
+
+        .code-block::before {
+            content: attr(data-lang);
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 0.8em;
+            color: var(--accent-color);
+            font-weight: 500;
+        }
+
+        .command {
+            background: #2d3748;
+            color: #68d391;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 0.9em;
+            border-left: 3px solid var(--success-color);
+        }
+
+        .command::before {
+            content: '$ ';
+            color: var(--success-color);
+            font-weight: bold;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .feature-card {
+            background: var(--secondary-gradient);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-color);
+            box-shadow: 0 15px 35px rgba(102,126,234,0.2);
+        }
+
+        .feature-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .feature-card h3 {
+            color: var(--accent-color);
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .step-list {
+            counter-reset: step-counter;
+            list-style: none;
+            margin: 20px 0;
+        }
+
+        .step-list li {
+            counter-increment: step-counter;
+            margin: 20px 0;
+            padding: 20px;
+            background: var(--secondary-gradient);
+            border-radius: 10px;
+            position: relative;
+            padding-left: 70px;
+        }
+
+        .step-list li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--accent-color);
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .warning-box {
+            background: #fef5e7;
+            border: 2px solid var(--warning-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            position: relative;
+            padding-left: 60px;
+        }
+
+        .warning-box::before {
+            content: '⚠️';
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            font-size: 1.5em;
+        }
+
+        .success-box {
+            background: #f0fff4;
+            border: 2px solid var(--success-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            position: relative;
+            padding-left: 60px;
+        }
+
+        .success-box::before {
+            content: '✅';
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            font-size: 1.5em;
+        }
+
+        .api-endpoint {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 0.9em;
+            border-left: 3px solid var(--accent-color);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .method {
+            background: var(--accent-color);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .json-preview {
+            background: #1a202c;
+            color: #68d391;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 0.85em;
+            overflow-x: auto;
+            border: 1px solid var(--accent-color);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 40px 0;
+            border-top: 3px solid var(--accent-color);
+            margin-top: 60px;
+            color: var(--text-light);
+            background: var(--secondary-gradient);
+            border-radius: 15px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: var(--text-dark);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2.5em;
+            }
+            
+            .nav-tabs {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <h1>🤖 Antonova Agent</h1>
+                <p class="subtitle">Interactive AI Automation & Audio Narration System</p>
+                <div class="badges">
+                    <a href="#" class="badge">Node.js 18+</a>
+                    <a href="#" class="badge">Claude Code SDK</a>
+                    <a href="#" class="badge">DeepGram TTS</a>
+                    <a href="#" class="badge">Interactive Demo</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('overview')">
+                🏠 Overview
+            </button>
+            <button class="nav-tab" onclick="showTab('quickstart')">
+                🚀 Quick Start
+            </button>
+            <button class="nav-tab" onclick="showTab('features')">
+                ✨ Features
+            </button>
+            <button class="nav-tab" onclick="showTab('api')">
+                📡 API Reference
+            </button>
+            <button class="nav-tab" onclick="showTab('troubleshooting')">
+                🔧 Troubleshooting
+            </button>
+        </div>
+
+        <div id="overview" class="tab-content active">
+            <div class="section">
+                <h2>What is Antonova?</h2>
+                <p>Antonova is an interactive demonstration of Claude Code SDK capabilities, featuring a unique plan-then-execute workflow that ensures safe AI automation with user oversight. The system combines powerful automation with immersive audio narration powered by DeepGram TTS.</p>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <span class="feature-icon">🧠</span>
+                        <h3>AI-Powered Planning</h3>
+                        <p>Claude generates comprehensive plans before execution, ensuring transparency and control.</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon">🔒</span>
+                        <h3>User Approval</h3>
+                        <p>Every automation requires explicit user approval before execution begins.</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon">🎙️</span>
+                        <h3>Audio Narration</h3>
+                        <p>DeepGram TTS transforms documentation into immersive audio experiences.</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon">⚡</span>
+                        <h3>Real Automation</h3>
+                        <p>Performs actual web requests, file operations, and code generation.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Project Architecture</h2>
+                <div class="code-block" data-lang="javascript">
+// Core Workflow Components
+├── index.js                 # Main Antonova CLI tool
+├── deepgram-service.js      # TTS backend service  
+├── narrative.html           # Interactive story webpage
+├── narrative-audio.js       # Frontend audio controls
+└── audio/                   # Generated narration files
+
+// Two-Phase Execution Pattern
+1. Planning Phase    → Claude generates plan (read-only)
+2. Approval Phase    → User reviews and approves
+3. Execution Phase   → Claude performs automation (write-enabled)
+                </div>
+            </div>
+        </div>
+
+        <div id="quickstart" class="tab-content">
+            <div class="section">
+                <h2>Quick Start Guide</h2>
+                
+                <h3>Prerequisites</h3>
+                <ul>
+                    <li>Node.js 18 or higher</li>
+                    <li>DeepGram API key (for audio features)</li>
+                    <li>Modern web browser</li>
+                </ul>
+
+                <h3>Installation</h3>
+                <ol class="step-list">
+                    <li>
+                        <strong>Install dependencies:</strong>
+                        <div class="command">npm install</div>
+                    </li>
+                    <li>
+                        <strong>Set up environment variables:</strong>
+                        <div class="code-block" data-lang="bash">
+# Add to ~/.zshrc or ~/.bashrc
+export DEEPGRAM_API_KEY="your_api_key_here"
+source ~/.zshrc  # Reload shell
+                        </div>
+                    </li>
+                    <li>
+                        <strong>Test the installation:</strong>
+                        <div class="command">node index.js</div>
+                    </li>
+                </ol>
+
+                <h3>Running the Demo</h3>
+                <ol class="step-list">
+                    <li>
+                        <strong>Start the basic agent:</strong>
+                        <div class="command">npm start</div>
+                        <p>This launches the interactive CLI where you can request automation tasks.</p>
+                    </li>
+                    <li>
+                        <strong>Start the audio service:</strong>
+                        <div class="command">node deepgram-service.js</div>
+                        <p>Enables TTS generation for the narrative experience.</p>
+                    </li>
+                    <li>
+                        <strong>Open the interactive story:</strong>
+                        <div class="command">open narrative.html</div>
+                        <p>Experience the full demonstration with audio narration.</p>
+                    </li>
+                </ol>
+
+                <div class="success-box">
+                    <strong>Success!</strong> You should now see the Antonova agent ready to accept tasks, and the narrative webpage should display with audio controls.
+                </div>
+            </div>
+        </div>
+
+        <div id="features" class="tab-content">
+            <div class="section">
+                <h2>Core Features</h2>
+
+                <h3>Interactive CLI Agent</h3>
+                <p>The main Antonova tool provides a conversational interface for AI automation:</p>
+                <div class="code-block" data-lang="javascript">
+// Example interaction
+🚀 Claude Code Plan & Execute Tool
+
+📝 What would you like Claude to help you with? 
+> Create a web scraper that fetches JSON data
+
+🤖 Getting plan from Claude...
+📋 Claude's Plan: [Detailed automation plan]
+✅ Do you approve this plan? (y/n): y
+
+⚡ Executing with Claude...
+✅ Execution completed!
+                </div>
+
+                <h3>Audio Narration System</h3>
+                <p>DeepGram TTS integration provides immersive storytelling:</p>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <span class="feature-icon">🎵</span>
+                        <h3>Chapter-Based Audio</h3>
+                        <p>Generate narration for each story section independently</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon">🎮</span>
+                        <h3>Interactive Controls</h3>
+                        <p>Play, pause, stop with keyboard shortcuts</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon">🔊</span>
+                        <h3>High-Quality Voice</h3>
+                        <p>Professional narration using Aura Asteria voice model</p>
+                    </div>
+                </div>
+
+                <h3>Automation Capabilities</h3>
+                <ul>
+                    <li><strong>Web Scraping:</strong> HTTP requests and JSON processing</li>
+                    <li><strong>File Operations:</strong> Reading, writing, and data management</li>
+                    <li><strong>Code Generation:</strong> Creating functional scripts and utilities</li>
+                    <li><strong>Network Operations:</strong> API calls and data collection</li>
+                    <li><strong>Real-time Processing:</strong> Live data transformation and storage</li>
+                </ul>
+
+                <h3>Safety Features</h3>
+                <div class="warning-box">
+                    <strong>Plan-Before-Execute:</strong> All automation tasks are planned first, shown to the user for approval, and only then executed. This ensures full transparency and control.
+                </div>
+            </div>
+        </div>
+
+        <div id="api" class="tab-content">
+            <div class="section">
+                <h2>API Reference</h2>
+
+                <h3>DeepGram Service Endpoints</h3>
+                
+                <div class="api-endpoint">
+                    <span class="method">POST</span>
+                    <span>/generate-speech</span>
+                </div>
+                <p>Generate text-to-speech audio from text input.</p>
+                <div class="code-block" data-lang="json">
+{
+  "text": "Your text to convert to speech",
+  "filename": "output.mp3"
+}
+                </div>
+
+                <div class="api-endpoint">
+                    <span class="method">GET</span>
+                    <span>/audio/{filename}</span>
+                </div>
+                <p>Retrieve generated audio files.</p>
+
+                <h3>Claude Code SDK Integration</h3>
+                <div class="code-block" data-lang="javascript">
+// Planning Phase
+const planResponse = await query({
+  prompt: userPrompt,
+  options: {
+    permissionMode: 'plan',
+    maxTurns: 1
+  }
+});
+
+// Execution Phase  
+const executionResponse = await query({
+  prompt: userPrompt,
+  options: {
+    permissionMode: 'acceptEdits',
+    maxTurns: 10
+  }
+});
+                </div>
+
+                <h3>JavaScript Audio Controls</h3>
+                <div class="code-block" data-lang="javascript">
+// Generate audio for a chapter
+await narrativeAudio.generateAudio(chapterNumber);
+
+// Play audio
+narrativeAudio.playAudio(chapterNumber);
+
+// Stop all audio
+narrativeAudio.stopAllAudio();
+
+// Check service status
+const isOffline = await narrativeAudio.checkServiceStatus();
+                </div>
+
+                <h3>Sample Response Data</h3>
+                <div class="json-preview">
+{
+  "timestamp": "2025-07-06T03:31:15.704Z",
+  "ip": {
+    "origin": "119.224.84.130"
+  },
+  "userAgent": {
+    "user-agent": "node"
+  },
+  "headers": {
+    "headers": {
+      "Accept": "*/*",
+      "Accept-Encoding": "br, gzip, deflate",
+      "User-Agent": "node"
+    }
+  },
+  "scraper": "Antonova Agent Demo"
+}
+                </div>
+            </div>
+        </div>
+
+        <div id="troubleshooting" class="tab-content">
+            <div class="section">
+                <h2>Troubleshooting</h2>
+
+                <h3>Common Issues</h3>
+
+                <h4>1. DeepGram API Key Issues</h4>
+                <div class="code-block" data-lang="bash">
+Error: DEEPGRAM_API_KEY environment variable not set
+                </div>
+                <p><strong>Solution:</strong> Ensure your API key is properly exported in your shell profile:</p>
+                <div class="command">echo $DEEPGRAM_API_KEY</div>
+
+                <h4>2. Audio Service Connection</h4>
+                <div class="warning-box">
+                    <strong>Problem:</strong> "Failed to generate audio. Service offline." appears in the browser.
+                </div>
+                <p><strong>Solution:</strong> Start the DeepGram service:</p>
+                <div class="command">node deepgram-service.js</div>
+
+                <h4>3. Permission Errors</h4>
+                <div class="code-block" data-lang="bash">
+Error: EACCES: permission denied, mkdir 'audio'
+                </div>
+                <p><strong>Solution:</strong> Ensure write permissions in the project directory:</p>
+                <div class="command">chmod -R 755 .</div>
+
+                <h4>4. Node.js Version Compatibility</h4>
+                <div class="warning-box">
+                    <strong>Problem:</strong> ES modules or fetch API not supported.
+                </div>
+                <p><strong>Solution:</strong> Upgrade to Node.js 18 or higher:</p>
+                <div class="command">node --version</div>
+
+                <h3>Debug Mode</h3>
+                <p>Enable detailed logging for troubleshooting:</p>
+                <div class="command">DEBUG=* node index.js</div>
+
+                <h3>Service Status Check</h3>
+                <p>Verify all services are running:</p>
+                <div class="code-block" data-lang="bash">
+# Check DeepGram service
+curl http://localhost:3001/
+
+# Check audio directory
+ls -la audio/
+
+# Test API key
+node -e "console.log(process.env.DEEPGRAM_API_KEY ? 'Key found' : 'Key missing')"
+                </div>
+
+                <h3>Browser Console Debugging</h3>
+                <p>Open browser developer tools and check for JavaScript errors:</p>
+                <div class="code-block" data-lang="javascript">
+// Check service connection
+await narrativeAudio.checkServiceStatus();
+
+// Test audio generation
+await narrativeAudio.generateAudio(1);
+                </div>
+
+                <div class="success-box">
+                    <strong>Still having issues?</strong> Check the README.md file for additional troubleshooting steps and configuration options.
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p><strong>Antonova Agent Documentation</strong></p>
+            <p>Interactive AI Automation with Audio Narration</p>
+            <div class="footer-links">
+                <a href="narrative.html" class="footer-link">📖 Interactive Story</a>
+                <a href="README.md" class="footer-link">📄 README</a>
+                <a href="#" class="footer-link">🐛 Report Issues</a>
+                <a href="#" class="footer-link">💡 Contribute</a>
+            </div>
+            <p style="margin-top: 20px; font-size: 0.9em; color: #666;">
+                Made with ❤️ using Claude Code SDK • DeepGram TTS • Node.js
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        // Add smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add copy functionality to code blocks
+        document.querySelectorAll('.code-block, .command').forEach(block => {
+            block.addEventListener('click', function() {
+                const text = this.textContent;
+                navigator.clipboard.writeText(text).then(() => {
+                    // Show temporary feedback
+                    const originalBorder = this.style.borderLeft;
+                    this.style.borderLeft = '4px solid #48bb78';
+                    setTimeout(() => {
+                        this.style.borderLeft = originalBorder;
+                    }, 1000);
+                }).catch(err => {
+                    console.error('Failed to copy text: ', err);
+                });
+            });
+        });
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.altKey) {
+                switch(e.key) {
+                    case '1':
+                        showTab('overview');
+                        break;
+                    case '2':
+                        showTab('quickstart');
+                        break;
+                    case '3':
+                        showTab('features');
+                        break;
+                    case '4':
+                        showTab('api');
+                        break;
+                    case '5':
+                        showTab('troubleshooting');
+                        break;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -9,7 +9,9 @@
     "dev": "node --inspect index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "agent": "node index.js",
-    "setup": "npm install && ./scripts/setup-labels.sh"
+    "setup": "npm install && ./scripts/setup-labels.sh",
+    "serve-journey": "node scripts/serve-journey.js",
+    "audio": "node scripts/generate-journey-audio.js"
   },
   "keywords": [
     "autonomous",
@@ -23,6 +25,7 @@
   "license": "MIT",
   "dependencies": {
     "@anthropic-ai/claude-code": "^1.0.41",
+    "@deepgram/sdk": "^4.7.0",
     "puppeteer": "^24.11.2"
   },
   "engines": {

@@ -498,6 +498,167 @@
             .subtitle { font-size: 1.1em; }
         }
 
+        /* Audio Controls */
+        .audio-controls {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+            border: 2px solid #667eea;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            min-width: 300px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .audio-controls.collapsed {
+            transform: translateX(calc(100% - 60px));
+        }
+
+        .audio-controls h3 {
+            color: #667eea;
+            margin: 0 0 15px 0;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .audio-toggle {
+            background: none;
+            border: none;
+            color: #667eea;
+            cursor: pointer;
+            font-size: 1.2em;
+            padding: 5px;
+        }
+
+        .audio-section {
+            margin-bottom: 15px;
+            padding: 12px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .audio-section.playing {
+            background: rgba(102, 126, 234, 0.2);
+            border-left-color: #9f7aea;
+            box-shadow: 0 0 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .audio-section h4 {
+            color: #e2e8f0;
+            margin: 0 0 8px 0;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .audio-player {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .play-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+        }
+
+        .play-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .audio-progress {
+            flex: 1;
+            height: 6px;
+            background: #2d3748;
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .audio-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.1s ease;
+        }
+
+        .audio-time {
+            color: #718096;
+            font-size: 0.8em;
+            min-width: 45px;
+            text-align: right;
+        }
+
+        .audio-global-controls {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #2d3748;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .global-btn {
+            background: #2d3748;
+            border: 1px solid #667eea;
+            color: #667eea;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.3s ease;
+        }
+
+        .global-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .global-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .audio-visualization {
+            height: 40px;
+            background: #0a0e1a;
+            border-radius: 8px;
+            margin: 10px 0;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #2d3748;
+        }
+
+        .viz-bar {
+            position: absolute;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(0deg, #667eea 0%, #764ba2 100%);
+            animation: audioViz 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes audioViz {
+            0% { transform: scaleY(0.3); }
+            100% { transform: scaleY(1); }
+        }
+
         /* Highlights */
         .highlight {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -514,6 +675,21 @@
             0% { transform: scale(1); }
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
+        }
+
+        /* Mobile audio controls */
+        @media (max-width: 768px) {
+            .audio-controls {
+                bottom: 20px;
+                right: 20px;
+                left: 20px;
+                min-width: unset;
+                max-width: calc(100% - 40px);
+            }
+            
+            .audio-controls.collapsed {
+                transform: translateY(calc(100% - 60px));
+            }
         }
     </style>
 </head>
@@ -753,10 +929,460 @@ npm start
     </div>
 
     <!-- Footer -->
+    <!-- Audio Controls -->
+    <div class="audio-controls" id="audioControls">
+        <h3>
+            🎵 Journey Narration
+            <button class="audio-toggle" onclick="toggleAudioControls()" id="audioToggle">−</button>
+        </h3>
+        
+        <div id="audioContent">
+            <div class="audio-visualization" id="visualization">
+                <!-- Audio visualization bars will be inserted here -->
+            </div>
+            
+            <div id="audioSections">
+                <!-- Audio sections will be dynamically loaded -->
+            </div>
+            
+            <div class="audio-global-controls">
+                <button class="global-btn" onclick="playAll()" id="playAllBtn">▶ Play All</button>
+                <button class="global-btn" onclick="stopAll()" id="stopAllBtn">⏹ Stop</button>
+                <button class="global-btn" onclick="toggleAutoPlay()" id="autoPlayBtn">🔄 Auto</button>
+            </div>
+        </div>
+    </div>
+
     <div class="footer">
         <p>🤖 Agent Antonova - Autonomous Claude Code Agent</p>
         <p>Repository: <a href="https://github.com/nuvemlabs/agent.antonova" target="_blank">github.com/nuvemlabs/agent.antonova</a></p>
-        <p style="margin-top: 20px; opacity: 0.7;">Built with Claude Code SDK | Never Stops Working</p>
+        <p style="margin-top: 20px; opacity: 0.7;">Built with Claude Code SDK | Enhanced with DeepGram Audio</p>
     </div>
+
+    <script>
+        // Audio control system
+        let audioManifest = null;
+        let currentAudio = null;
+        let autoPlay = false;
+        let audioElements = {};
+        
+        // Load audio manifest and initialize controls
+        async function initializeAudio() {
+            console.log('🎵 Starting audio initialization...');
+            console.log('📁 Current page URL:', window.location.href);
+            
+            try {
+                console.log('📥 Fetching audio manifest...');
+                const manifestUrl = './audio-manifest.json';
+                console.log('🔗 Manifest URL:', manifestUrl);
+                
+                const response = await fetch(manifestUrl);
+                console.log('📋 Manifest response status:', response.status, response.statusText);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                audioManifest = await response.json();
+                console.log('✅ Audio manifest loaded successfully:', audioManifest);
+                console.log('📊 Audio sections available:', audioManifest.sections.length);
+                
+                // Verify audio files exist
+                await verifyAudioFiles();
+                
+                // Create audio sections
+                createAudioSections();
+                
+                // Initialize visualization
+                initializeVisualization();
+                
+                console.log('🎉 Audio initialization complete!');
+                
+            } catch (error) {
+                console.error('❌ Audio initialization failed:', error);
+                console.error('🔍 Error details:', error.message);
+                console.error('📍 Error stack:', error.stack);
+                
+                // Show user-friendly error message
+                showAudioError(error);
+            }
+        }
+        
+        async function verifyAudioFiles() {
+            console.log('🔍 Verifying audio files...');
+            
+            for (const section of audioManifest.sections) {
+                if (section.hasAudio) {
+                    const audioUrl = `./audio/${section.audioFile}`;
+                    console.log(`🎵 Checking: ${audioUrl}`);
+                    
+                    try {
+                        const response = await fetch(audioUrl, { method: 'HEAD' });
+                        if (response.ok) {
+                            console.log(`✅ ${section.audioFile} - OK (${response.headers.get('content-length')} bytes)`);
+                        } else {
+                            console.warn(`⚠️ ${section.audioFile} - ${response.status} ${response.statusText}`);
+                        }
+                    } catch (error) {
+                        console.error(`❌ ${section.audioFile} - Error:`, error.message);
+                    }
+                }
+            }
+        }
+        
+        function showAudioError(error) {
+            const audioControls = document.getElementById('audioControls');
+            audioControls.innerHTML = `
+                <h3>🎵 Audio Narration - Error</h3>
+                <div style="color: #f56565; padding: 15px; background: rgba(245, 101, 101, 0.1); border-radius: 8px; margin: 10px 0;">
+                    <strong>⚠️ Audio loading failed:</strong><br>
+                    ${error.message}
+                    <br><br>
+                    <details style="margin-top: 10px;">
+                        <summary style="cursor: pointer; color: #667eea;">🔍 Technical Details</summary>
+                        <pre style="font-size: 0.8em; margin-top: 8px; color: #718096;">${error.stack || 'No stack trace available'}</pre>
+                    </details>
+                </div>
+                <div style="color: #718096; font-size: 0.9em; line-height: 1.5;">
+                    💡 <strong>Possible solutions:</strong><br>
+                    • Open the page via HTTP server instead of file:// protocol<br>
+                    • Check browser console for additional error details<br>
+                    • Ensure audio files are accessible in the audio/ directory<br>
+                    • Try refreshing the page or using a different browser
+                </div>
+            `;
+        }
+        
+        function createAudioSections() {
+            console.log('🏗️ Creating audio sections...');
+            const container = document.getElementById('audioSections');
+            
+            if (!container) {
+                console.error('❌ Audio sections container not found!');
+                return;
+            }
+            
+            audioManifest.sections.forEach((section, index) => {
+                if (!section.hasAudio) {
+                    console.log(`⏭️ Skipping section ${index}: ${section.title} (no audio)`);
+                    return;
+                }
+                
+                console.log(`🎵 Creating audio section ${index}: ${section.title}`);
+                
+                const sectionDiv = document.createElement('div');
+                sectionDiv.className = 'audio-section';
+                sectionDiv.id = `audio-section-${index}`;
+                
+                sectionDiv.innerHTML = `
+                    <h4>${section.title}</h4>
+                    <div class="audio-player">
+                        <button class="play-btn" onclick="toggleAudio(${index})" id="playBtn-${index}">▶</button>
+                        <div class="audio-progress" onclick="seekAudio(${index}, event)">
+                            <div class="audio-progress-bar" id="progress-${index}"></div>
+                        </div>
+                        <span class="audio-time" id="time-${index}">0:00</span>
+                    </div>
+                `;
+                
+                container.appendChild(sectionDiv);
+                
+                // Create audio element with detailed logging
+                const audioUrl = `./audio/${section.audioFile}`;
+                console.log(`🎧 Creating Audio object for: ${audioUrl}`);
+                
+                const audio = new Audio(audioUrl);
+                
+                // Add comprehensive event listeners
+                audio.addEventListener('loadstart', () => {
+                    console.log(`📥 Audio ${index}: Load started`);
+                });
+                
+                audio.addEventListener('loadeddata', () => {
+                    console.log(`✅ Audio ${index}: Data loaded`);
+                });
+                
+                audio.addEventListener('loadedmetadata', () => {
+                    console.log(`📊 Audio ${index}: Metadata loaded - Duration: ${audio.duration}s`);
+                    updateDuration(index);
+                });
+                
+                audio.addEventListener('canplay', () => {
+                    console.log(`▶️ Audio ${index}: Can start playing`);
+                });
+                
+                audio.addEventListener('error', (e) => {
+                    console.error(`❌ Audio ${index} error:`, e);
+                    console.error(`🔍 Error details:`, audio.error);
+                    showAudioElementError(index, audio.error);
+                });
+                
+                audio.addEventListener('timeupdate', () => updateProgress(index));
+                audio.addEventListener('ended', () => onAudioEnded(index));
+                
+                audioElements[index] = audio;
+                console.log(`✅ Audio element ${index} created and stored`);
+            });
+            
+            console.log(`🎉 Created ${Object.keys(audioElements).length} audio elements`);
+        }
+        
+        function showAudioElementError(index, error) {
+            const section = document.getElementById(`audio-section-${index}`);
+            if (section) {
+                const errorDiv = document.createElement('div');
+                errorDiv.style.cssText = 'color: #f56565; font-size: 0.8em; margin-top: 5px; padding: 5px; background: rgba(245, 101, 101, 0.1); border-radius: 4px;';
+                errorDiv.innerHTML = `⚠️ Audio load error: ${error ? error.message || 'Unknown error' : 'Network or format issue'}`;
+                section.appendChild(errorDiv);
+            }
+        }
+        
+        function initializeVisualization() {
+            const viz = document.getElementById('visualization');
+            // Create 20 visualization bars
+            for (let i = 0; i < 20; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'viz-bar';
+                bar.style.left = `${i * 5}%`;
+                bar.style.animationDelay = `${i * 0.05}s`;
+                viz.appendChild(bar);
+            }
+        }
+        
+        function toggleAudio(index) {
+            console.log(`🎵 toggleAudio called for index: ${index}`);
+            
+            const audio = audioElements[index];
+            const playBtn = document.getElementById(`playBtn-${index}`);
+            const section = document.getElementById(`audio-section-${index}`);
+            
+            if (!audio) {
+                console.error(`❌ No audio element found for index ${index}`);
+                return;
+            }
+            
+            if (!playBtn) {
+                console.error(`❌ No play button found for index ${index}`);
+                return;
+            }
+            
+            console.log(`🎧 Audio ${index} state - paused: ${audio.paused}, readyState: ${audio.readyState}, networkState: ${audio.networkState}`);
+            console.log(`🔗 Audio ${index} src: ${audio.src}`);
+            
+            if (audio.paused) {
+                console.log(`▶️ Starting playback for audio ${index}`);
+                
+                // Stop all other audio
+                stopAll();
+                
+                // Play this audio
+                const playPromise = audio.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise
+                        .then(() => {
+                            console.log(`✅ Audio ${index} started playing successfully`);
+                            playBtn.textContent = '⏸';
+                            section.classList.add('playing');
+                            currentAudio = index;
+                            
+                            // Scroll timeline item into view
+                            scrollToTimelineItem(index);
+                        })
+                        .catch((error) => {
+                            console.error(`❌ Audio ${index} play failed:`, error);
+                            
+                            // Show user-friendly error in the audio section
+                            const errorMsg = document.createElement('div');
+                            errorMsg.style.cssText = 'color: #f56565; font-size: 0.8em; margin-top: 5px;';
+                            errorMsg.textContent = `❌ Playback failed: ${error.message}`;
+                            section.appendChild(errorMsg);
+                            
+                            // Reset button state
+                            playBtn.textContent = '▶';
+                            section.classList.remove('playing');
+                        });
+                } else {
+                    console.warn(`⚠️ Audio ${index} play() returned undefined (older browser)`);
+                    playBtn.textContent = '⏸';
+                    section.classList.add('playing');
+                    currentAudio = index;
+                    scrollToTimelineItem(index);
+                }
+                
+            } else {
+                console.log(`⏸ Pausing audio ${index}`);
+                audio.pause();
+                playBtn.textContent = '▶';
+                section.classList.remove('playing');
+                currentAudio = null;
+            }
+        }
+        
+        function stopAll() {
+            Object.keys(audioElements).forEach(index => {
+                const audio = audioElements[index];
+                audio.pause();
+                audio.currentTime = 0;
+                
+                const playBtn = document.getElementById(`playBtn-${index}`);
+                if (playBtn) playBtn.textContent = '▶';
+                
+                const section = document.getElementById(`audio-section-${index}`);
+                if (section) section.classList.remove('playing');
+            });
+            currentAudio = null;
+        }
+        
+        async function playAll() {
+            autoPlay = true;
+            document.getElementById('autoPlayBtn').classList.add('active');
+            
+            if (currentAudio === null) {
+                toggleAudio(0); // Start with first section
+            }
+        }
+        
+        function toggleAutoPlay() {
+            autoPlay = !autoPlay;
+            const btn = document.getElementById('autoPlayBtn');
+            
+            if (autoPlay) {
+                btn.classList.add('active');
+                btn.textContent = '🔄 Auto ✓';
+            } else {
+                btn.classList.remove('active');
+                btn.textContent = '🔄 Auto';
+            }
+        }
+        
+        function onAudioEnded(index) {
+            const playBtn = document.getElementById(`playBtn-${index}`);
+            const section = document.getElementById(`audio-section-${index}`);
+            
+            playBtn.textContent = '▶';
+            section.classList.remove('playing');
+            
+            if (autoPlay && index < audioManifest.sections.length - 1) {
+                // Auto-play next section
+                setTimeout(() => {
+                    const nextIndex = audioManifest.sections.findIndex((s, i) => i > index && s.hasAudio);
+                    if (nextIndex !== -1) {
+                        toggleAudio(nextIndex);
+                    }
+                }, 1000);
+            } else {
+                currentAudio = null;
+            }
+        }
+        
+        function updateProgress(index) {
+            const audio = audioElements[index];
+            const progressBar = document.getElementById(`progress-${index}`);
+            const timeDisplay = document.getElementById(`time-${index}`);
+            
+            if (audio.duration) {
+                const progress = (audio.currentTime / audio.duration) * 100;
+                progressBar.style.width = `${progress}%`;
+                
+                const minutes = Math.floor(audio.currentTime / 60);
+                const seconds = Math.floor(audio.currentTime % 60);
+                timeDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }
+        }
+        
+        function updateDuration(index) {
+            const audio = audioElements[index];
+            const timeDisplay = document.getElementById(`time-${index}`);
+            
+            if (audio.duration) {
+                const minutes = Math.floor(audio.duration / 60);
+                const seconds = Math.floor(audio.duration % 60);
+                timeDisplay.setAttribute('data-duration', `${minutes}:${seconds.toString().padStart(2, '0')}`);
+            }
+        }
+        
+        function seekAudio(index, event) {
+            const audio = audioElements[index];
+            const progressContainer = event.currentTarget;
+            const clickX = event.offsetX;
+            const totalWidth = progressContainer.offsetWidth;
+            const percentage = clickX / totalWidth;
+            
+            if (audio.duration) {
+                audio.currentTime = audio.duration * percentage;
+            }
+        }
+        
+        function scrollToTimelineItem(index) {
+            const timelineItems = document.querySelectorAll('.timeline-item');
+            if (timelineItems[index]) {
+                timelineItems[index].scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+                
+                // Add highlight effect
+                timelineItems[index].style.transform = 'scale(1.02)';
+                timelineItems[index].style.transition = 'transform 0.3s ease';
+                
+                setTimeout(() => {
+                    timelineItems[index].style.transform = '';
+                }, 2000);
+            }
+        }
+        
+        function toggleAudioControls() {
+            const controls = document.getElementById('audioControls');
+            const toggle = document.getElementById('audioToggle');
+            const content = document.getElementById('audioContent');
+            
+            if (controls.classList.contains('collapsed')) {
+                controls.classList.remove('collapsed');
+                toggle.textContent = '−';
+                content.style.display = 'block';
+            } else {
+                controls.classList.add('collapsed');
+                toggle.textContent = '+';
+                content.style.display = 'none';
+            }
+        }
+        
+        // Initialize audio when page loads
+        document.addEventListener('DOMContentLoaded', initializeAudio);
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName.toLowerCase() === 'input') return;
+            
+            switch(e.key) {
+                case ' ':
+                    e.preventDefault();
+                    if (currentAudio !== null) {
+                        toggleAudio(currentAudio);
+                    } else {
+                        toggleAudio(0);
+                    }
+                    break;
+                case 'ArrowRight':
+                    e.preventDefault();
+                    if (currentAudio !== null && currentAudio < audioManifest.sections.length - 1) {
+                        const nextIndex = audioManifest.sections.findIndex((s, i) => i > currentAudio && s.hasAudio);
+                        if (nextIndex !== -1) toggleAudio(nextIndex);
+                    }
+                    break;
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    if (currentAudio !== null && currentAudio > 0) {
+                        const prevIndex = audioManifest.sections.slice(0, currentAudio).reverse().findIndex(s => s.hasAudio);
+                        if (prevIndex !== -1) toggleAudio(currentAudio - 1 - prevIndex);
+                    }
+                    break;
+                case 'Escape':
+                    stopAll();
+                    break;
+            }
+        });
+    </script>
 </body>
 </html>

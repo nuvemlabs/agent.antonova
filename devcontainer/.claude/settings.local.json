@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(ttalk:*)",
-      "Bash(chmod:*)"
-    ],
-    "deny": []
-  }
-}

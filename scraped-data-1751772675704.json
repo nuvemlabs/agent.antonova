@@ -1,0 +1,21 @@
+{
+  "timestamp": "2025-07-06T03:31:15.704Z",
+  "ip": {
+    "origin": "119.224.84.130"
+  },
+  "userAgent": {
+    "user-agent": "node"
+  },
+  "headers": {
+    "headers": {
+      "Accept": "*/*",
+      "Accept-Encoding": "br, gzip, deflate",
+      "Accept-Language": "*",
+      "Host": "httpbin.org",
+      "Sec-Fetch-Mode": "cors",
+      "User-Agent": "node",
+      "X-Amzn-Trace-Id": "Root=1-6869ee03-08a8c8dd141ce25f0412c509"
+    }
+  },
+  "scraper": "Antonova Agent Demo"
+}

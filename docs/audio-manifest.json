@@ -1,0 +1,43 @@
+{
+  "generated": "2025-07-06T02:52:34.427Z",
+  "sections": [
+    {
+      "index": 0,
+      "title": "Phase 1: The Vision",
+      "audioFile": "timeline-section-1.wav",
+      "hasAudio": true
+    },
+    {
+      "index": 1,
+      "title": "Phase 2: Repository Setup",
+      "audioFile": "timeline-section-2.wav",
+      "hasAudio": true
+    },
+    {
+      "index": 2,
+      "title": "Phase 3: Issue Generation",
+      "audioFile": "timeline-section-3.wav",
+      "hasAudio": true
+    },
+    {
+      "index": 3,
+      "title": "Phase 4: Core Implementation",
+      "audioFile": "timeline-section-4.wav",
+      "hasAudio": true
+    },
+    {
+      "index": 4,
+      "title": "Phase 5: Testing & Debugging",
+      "audioFile": "timeline-section-5.wav",
+      "hasAudio": true
+    },
+    {
+      "index": 5,
+      "title": "Current State",
+      "audioFile": "timeline-section-6.wav",
+      "hasAudio": true
+    }
+  ],
+  "totalSections": 6,
+  "audioSections": 6
+}

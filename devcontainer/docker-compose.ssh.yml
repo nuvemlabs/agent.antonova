@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile.ssh
       args:
-        TZ: "${TZ:-America/Los_Angeles}"
+        TZ: "${TZ:-Pacific/Auckland}"
     container_name: antonova-ssh-dev
     hostname: antonova-dev
     cap_add:

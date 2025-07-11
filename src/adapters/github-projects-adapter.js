@@ -473,6 +473,49 @@ export class GitHubProjectsAdapter extends IssueAdapter {
   }
 
   /**
+   * Find project item ID by issue number
+   */
+  async findProjectItemIdByIssueNumber(issueNumber) {
+    if (this.fallbackMode) {
+      return issueNumber; // In fallback mode, we use issue number directly
+    }
+    
+    try {
+      const result = await graphql(queries.getProjectItems, {
+        owner: this.owner,
+        projectNumber: this.projectNumber
+      });
+      
+      const items = result.data?.user?.projectV2?.items?.nodes || [];
+      
+      for (const item of items) {
+        if (item.content && item.content.number === issueNumber) {
+          return item.id;
+        }
+      }
+      
+      // Issue not found in project - this could happen if:
+      // 1. Issue exists but is not added to the project
+      // 2. Issue was removed from the project
+      // 3. Issue doesn't exist
+      const errorMsg = `Issue #${issueNumber} not found in project #${this.projectNumber}`;
+      console.warn(`⚠️  ${errorMsg}`);
+      console.warn(`   This could mean the issue is not added to the project board`);
+      console.warn(`   Project URL: https://github.com/${this.owner}/${this.repo}/projects/${this.projectNumber}`);
+      
+      throw new Error(errorMsg);
+    } catch (error) {
+      if (error.message.includes('Resource not accessible by personal access token')) {
+        console.warn('⚠️  Falling back to manual project board update');
+        this.fallbackMode = true;
+        return issueNumber; // Return issue number for fallback mode
+      }
+      
+      throw new Error(`Failed to find project item for issue #${issueNumber}: ${error.message}`);
+    }
+  }
+
+  /**
    * Update the status of an issue
    */
   async updateIssueStatus(issueId, status) {
@@ -488,6 +531,17 @@ export class GitHubProjectsAdapter extends IssueAdapter {
       throw new Error('Status field not found in project');
     }
     
+    // Convert issue number to project item ID
+    const issueNumber = typeof issueId === 'string' ? parseInt(issueId) : issueId;
+    let projectItemId;
+    
+    try {
+      projectItemId = await this.findProjectItemIdByIssueNumber(issueNumber);
+    } catch (error) {
+      console.error(`❌ Failed to find project item for issue #${issueNumber}:`, error.message);
+      return false;
+    }
+    
     // Find the option ID for the status
     // Map our internal status names to project board option names
     const statusNameMap = {
@@ -500,22 +554,30 @@ export class GitHubProjectsAdapter extends IssueAdapter {
     };
     
     const targetOptionName = statusNameMap[status] || status;
-    const statusOption = statusField.options.find(opt => opt.name === targetOptionName);
+    
+    // Try exact match first, then case-insensitive match
+    let statusOption = statusField.options.find(opt => opt.name === targetOptionName);
+    if (!statusOption) {
+      statusOption = statusField.options.find(opt => opt.name.toLowerCase() === targetOptionName.toLowerCase());
+    }
     
     if (!statusOption) {
+      console.error(`❌ Status option not found for: ${status}`);
+      console.error(`   Target option name: ${targetOptionName}`);
+      console.error(`   Available options: ${statusField.options.map(opt => opt.name).join(', ')}`);
       throw new Error(`Status option not found for: ${status}`);
     }
     
     try {
-      // Use gh project item-edit command directly
+      // Use gh project item-edit command with correct project item ID
       const { exec } = await import('child_process');
       const { promisify } = await import('util');
       const execAsync = promisify(exec);
       
-      const command = `gh project item-edit --id ${issueId} --field-id ${statusField.id} --project-id ${this.projectId} --single-select-option-id ${statusOption.id}`;
+      const command = `gh project item-edit --id ${projectItemId} --field-id ${statusField.id} --project-id ${this.projectId} --single-select-option-id ${statusOption.id}`;
       await execAsync(command);
       
-      console.log(`✅ Updated issue ${issueId} status to: ${status}`);
+      console.log(`✅ Updated issue #${issueNumber} status to: ${status}`);
       return true;
     } catch (error) {
       if (error.message.includes('Resource not accessible by personal access token')) {
@@ -523,7 +585,7 @@ export class GitHubProjectsAdapter extends IssueAdapter {
         this.fallbackMode = true;
         return this.updateIssueStatusFallback(issueId, status);
       }
-      console.error(`❌ Failed to update issue ${issueId} status:`, error.message);
+      console.error(`❌ Failed to update issue #${issueNumber} status:`, error.message);
       return false;
     }
   }

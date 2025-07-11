@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Antonova - Technical Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #e2e8f0;
+            background: #0a0e1a;
+            overflow-x: hidden;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg"><path d="M0,300 C200,200 400,400 600,300 C800,200 1000,400 1200,300 L1200,600 L0,600 Z" fill="rgba(255,255,255,0.05)"/></svg>');
+            background-size: cover;
+            animation: wave 20s linear infinite;
+        }
+
+        @keyframes wave {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-1200px); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .subtitle {
+            font-size: 1.5em;
+            color: #e0e0e0;
+            margin-bottom: 30px;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Section Styles */
+        .section {
+            background: #1a202c;
+            border: 1px solid #2d3748;
+            border-radius: 12px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        h2 {
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+            border-bottom: 2px solid #2d3748;
+            padding-bottom: 15px;
+        }
+
+        h3 {
+            color: #9f7aea;
+            margin: 30px 0 20px 0;
+            font-size: 1.6em;
+        }
+
+        h4 {
+            color: #b794f4;
+            margin: 20px 0 15px 0;
+            font-size: 1.3em;
+        }
+
+        p {
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+
+        /* Code blocks */
+        .code-block {
+            background: #0a0e1a;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block pre {
+            color: #e2e8f0;
+            font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+            font-size: 0.9em;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+
+        .code-label {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #2d3748;
+            color: #667eea;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        ul li, ol li {
+            margin-bottom: 10px;
+            color: #e2e8f0;
+        }
+
+        /* Feature Grid */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .feature-card {
+            background: #2d3748;
+            border: 1px solid #4a5568;
+            border-radius: 8px;
+            padding: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.2);
+            border-color: #667eea;
+        }
+
+        .feature-card h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        /* Architecture diagram */
+        .architecture-diagram {
+            background: #0a0e1a;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .flow-item {
+            background: #2d3748;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            padding: 15px 25px;
+            font-weight: 600;
+            position: relative;
+        }
+
+        .flow-arrow {
+            color: #667eea;
+            font-size: 1.5em;
+            margin: 0 10px;
+        }
+
+        /* Inline code */
+        code {
+            background: #2d3748;
+            color: #f687b3;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Fira Code', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #2d3748;
+        }
+
+        th {
+            background: #2d3748;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        /* Highlight */
+        .highlight {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+        }
+
+        /* Alert boxes */
+        .alert {
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid;
+        }
+
+        .alert-info {
+            background: rgba(66, 153, 225, 0.1);
+            border-color: #4299e1;
+        }
+
+        .alert-warning {
+            background: rgba(236, 201, 75, 0.1);
+            border-color: #ecc94b;
+        }
+
+        .alert-success {
+            background: rgba(72, 187, 120, 0.1);
+            border-color: #48bb78;
+        }
+
+        /* Navigation */
+        .nav {
+            position: sticky;
+            top: 0;
+            background: #1a202c;
+            border-bottom: 1px solid #2d3748;
+            padding: 20px 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-items {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .nav-item {
+            color: #e2e8f0;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .nav-item:hover {
+            color: #667eea;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5em; }
+            h2 { font-size: 1.8em; }
+            .section { padding: 20px; }
+            .flow-diagram { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <div class="hero-content">
+            <h1>Agent Antonova</h1>
+            <p class="subtitle">Complete Technical Documentation</p>
+        </div>
+    </div>
+
+    <nav class="nav">
+        <div class="nav-items">
+            <a href="#overview" class="nav-item">Overview</a>
+            <a href="#architecture" class="nav-item">Architecture</a>
+            <a href="#claude-sdk" class="nav-item">Claude Code SDK</a>
+            <a href="#mechanics" class="nav-item">Working Mechanics</a>
+            <a href="#npm-project" class="nav-item">NPM Project</a>
+            <a href="#implementation" class="nav-item">Implementation</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Overview Section -->
+        <section id="overview" class="section">
+            <h2>What is Agent Antonova?</h2>
+            
+            <p>Agent Antonova is a fully autonomous software development agent that operates continuously without human intervention. It's a Node.js application that integrates with the Claude Code SDK to create a self-managing development workflow.</p>
+
+            <h3>Core Concept</h3>
+            <p>The agent runs in an infinite loop, automatically discovering work, implementing solutions, and submitting pull requests. It represents a paradigm shift from human-driven to AI-driven development workflows.</p>
+
+            <div class="flow-diagram">
+                <div class="flow-item">Query Issues</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-item">Select Priority</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-item">Implement</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-item">Create PR</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-item">Loop</div>
+            </div>
+
+            <h3>Key Characteristics</h3>
+            <ul>
+                <li><strong>Fully Autonomous:</strong> Runs without any human prompts or approvals</li>
+                <li><strong>Continuous Operation:</strong> Never stops unless explicitly terminated</li>
+                <li><strong>GitHub Native:</strong> Works directly with GitHub issues and pull requests</li>
+                <li><strong>Priority Driven:</strong> Uses sophisticated scoring to select work</li>
+                <li><strong>Self-Documenting:</strong> Creates comprehensive documentation for all changes</li>
+            </ul>
+        </section>
+
+        <!-- Architecture Section -->
+        <section id="architecture" class="section">
+            <h2>System Architecture</h2>
+            
+            <h3>Component Overview</h3>
+            <p>Agent Antonova follows a modular architecture with clear separation of concerns:</p>
+
+            <div class="architecture-diagram">
+                <h4>High-Level Architecture</h4>
+                <div class="code-block">
+                    <pre>
+┌─────────────────────────────────────────────────┐
+│                   index.js                       │
+│              (Entry Point & CLI)                 │
+└───────────────────┬─────────────────────────────┘
+                    │
+┌───────────────────▼─────────────────────────────┐
+│            AutonomousAgent                       │
+│         (src/autonomous-agent.js)                │
+│                                                  │
+│  • Main execution loop                           │
+│  • Issue processing                              │
+│  • Claude Code SDK integration                   │
+│  • Git operations                                │
+└───────┬───────────────────────┬─────────────────┘
+        │                       │
+┌───────▼──────────┐    ┌──────▼──────────────────┐
+│   IssueEngine    │    │   Claude Code SDK        │
+│                  │    │                          │
+│ • Query issues   │    │ • Code generation       │
+│ • Parse format   │    │ • Autonomous execution  │
+│ • Update status  │    │ • File operations       │
+└───────┬──────────┘    └──────────────────────────┘
+        │
+┌───────▼──────────────────────────────────────────┐
+│              Adapter System                       │
+├──────────────────────┬───────────────────────────┤
+│ GitHubProjectsAdapter│    GitHubLabelsAdapter    │
+│                      │                           │
+│ • GraphQL queries    │    • REST API calls      │
+│ • Project fields     │    • Label management    │
+│ • Fine scoring       │    • Simple priority     │
+└──────────────────────┴───────────────────────────┘
+                    </pre>
+                </div>
+            </div>
+
+            <h3>Core Components</h3>
+
+            <h4>1. AutonomousAgent Class</h4>
+            <p>The heart of the system, located in <code>src/autonomous-agent.js</code>:</p>
+            
+            <div class="code-block">
+                <span class="code-label">JavaScript</span>
+                <pre>export class AutonomousAgent {
+  constructor() {
+    this.issueEngine = new IssueEngine();
+    this.isRunning = false;
+    this.currentIssue = null;
+    this.executionHistory = [];
+    this.loopInterval = 30000; // 30 seconds
+  }
+
+  async start() {
+    this.isRunning = true;
+    while (this.isRunning) {
+      try {
+        await this.processNextIssue();
+      } catch (error) {
+        console.error('❌ Error:', error.message);
+        await this.sleep(this.loopInterval);
+      }
+    }
+  }
+}</pre>
+            </div>
+
+            <h4>2. IssueEngine</h4>
+            <p>Manages issue discovery and prioritization through an adapter pattern:</p>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>Adapter Detection</h4>
+                    <p>Automatically loads the correct adapter based on <code>.antonova/config.json</code></p>
+                </div>
+                <div class="feature-card">
+                    <h4>Priority Calculation</h4>
+                    <p>Implements the formula: (Impact × Urgency × 10) ÷ Effort + Adjustment</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Status Management</h4>
+                    <p>Tracks issues through: backlog → ready → in-progress → review → done</p>
+                </div>
+            </div>
+
+            <h4>3. Adapter System</h4>
+            <p>Extensible plugin architecture for different issue tracking systems:</p>
+
+            <table>
+                <tr>
+                    <th>Adapter</th>
+                    <th>Use Case</th>
+                    <th>Features</th>
+                </tr>
+                <tr>
+                    <td>GitHubProjectsAdapter</td>
+                    <td>Modern GitHub Projects v2</td>
+                    <td>GraphQL API, custom fields, fine-grained scoring (0-1000+)</td>
+                </tr>
+                <tr>
+                    <td>GitHubLabelsAdapter</td>
+                    <td>Traditional GitHub labels</td>
+                    <td>REST API, simple labels, 4-tier priority system</td>
+                </tr>
+                <tr>
+                    <td>Future Adapters</td>
+                    <td>Jira, Linear, etc.</td>
+                    <td>Extensible base class for easy integration</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- Claude Code SDK Section -->
+        <section id="claude-sdk" class="section">
+            <h2>Claude Code SDK Integration</h2>
+            
+            <h3>What is Claude Code SDK?</h3>
+            <p>The Claude Code SDK (<code>@anthropic-ai/claude-code</code>) is Anthropic's official JavaScript/TypeScript library for programmatic interaction with Claude Code. It enables developers to integrate Claude's coding capabilities directly into their applications.</p>
+
+            <h3>SDK Context and Purpose</h3>
+            <p>Claude Code SDK provides:</p>
+            <ul>
+                <li><strong>Programmatic Access:</strong> Use Claude Code without the CLI interface</li>
+                <li><strong>Streaming Responses:</strong> Real-time message streaming for long operations</li>
+                <li><strong>Permission Modes:</strong> Control over Claude's autonomy level</li>
+                <li><strong>Tool Integration:</strong> Access to file operations, shell commands, and more</li>
+            </ul>
+
+            <h3>How Agent Antonova Uses the SDK</h3>
+            
+            <div class="code-block">
+                <span class="code-label">JavaScript</span>
+                <pre>import { query } from "@anthropic-ai/claude-code";
+
+async executeWithClaude(issueContent) {
+  const messages = [];
+  
+  // Create a query with full autonomy
+  const stream = query({
+    messages: [{
+      role: 'user',
+      content: this.buildPrompt(issueContent)
+    }],
+    permissionMode: 'acceptAll',  // Full autonomy
+    maxTurns: 15                  // Allow complex operations
+  });
+
+  // Process streaming responses
+  for await (const chunk of stream) {
+    if (chunk.message) {
+      messages.push(chunk.message);
+      process.stdout.write('.');  // Progress indicator
+    }
+  }
+
+  return messages;
+}</pre>
+            </div>
+
+            <h3>Permission Modes Explained</h3>
+            <table>
+                <tr>
+                    <th>Mode</th>
+                    <th>Description</th>
+                    <th>Use Case</th>
+                </tr>
+                <tr>
+                    <td><code>acceptAll</code></td>
+                    <td>Claude executes all operations without asking</td>
+                    <td>Full automation (Agent Antonova)</td>
+                </tr>
+                <tr>
+                    <td><code>acceptEdits</code></td>
+                    <td>Auto-approve edits, ask for other operations</td>
+                    <td>Semi-autonomous workflows</td>
+                </tr>
+                <tr>
+                    <td><code>askAll</code></td>
+                    <td>Ask permission for every operation</td>
+                    <td>Interactive development</td>
+                </tr>
+                <tr>
+                    <td><code>plan</code></td>
+                    <td>Only create a plan, don't execute</td>
+                    <td>Planning phase workflows</td>
+                </tr>
+            </table>
+
+            <h3>SDK Capabilities</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>File Operations</h4>
+                    <p>Read, write, edit files directly through the SDK</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Shell Commands</h4>
+                    <p>Execute bash commands, git operations, npm scripts</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Code Analysis</h4>
+                    <p>Parse codebases, understand dependencies, refactor</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Multi-Turn Conversations</h4>
+                    <p>Complex workflows requiring multiple steps</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Working Mechanics Section -->
+        <section id="mechanics" class="section">
+            <h2>Working Mechanics Deep Dive</h2>
+            
+            <h3>The Infinite Loop</h3>
+            <p>Agent Antonova's core is an infinite loop that never stops unless explicitly terminated:</p>
+
+            <div class="code-block">
+                <span class="code-label">Execution Flow</span>
+                <pre>while (this.isRunning) {
+  // 1. Query for highest priority issue
+  const issue = await this.issueEngine.getNextReadyIssue();
+  
+  if (!issue) {
+    await this.sleep(30000);  // Wait 30 seconds
+    continue;                 // Try again
+  }
+  
+  // 2. Update issue status
+  await this.issueEngine.updateIssueStatus(issue.id, 'in-progress');
+  
+  // 3. Parse issue structure
+  const { goal, acceptanceCriteria, technicalSpecs } = 
+    this.parseIssue(issue.body);
+  
+  // 4. Execute with Claude
+  const result = await this.executeWithClaude(issue);
+  
+  // 5. Create pull request
+  await this.createPullRequest(issue, result);
+  
+  // 6. Update to review status
+  await this.issueEngine.updateIssueStatus(issue.id, 'review');
+  
+  // 7. Brief pause, then continue
+  await this.sleep(5000);
+}</pre>
+            </div>
+
+            <h3>Issue Processing Pipeline</h3>
+            
+            <h4>Step 1: Issue Discovery</h4>
+            <p>The agent queries GitHub for issues matching specific criteria:</p>
+            <ul>
+                <li>Must have "ready" status (label or project column)</li>
+                <li>Not assigned to anyone</li>
+                <li>Not in "blocked" status</li>
+                <li>Sorted by priority score (highest first)</li>
+            </ul>
+
+            <h4>Step 2: Issue Parsing</h4>
+            <p>Issues must follow a specific format for optimal processing:</p>
+            
+            <div class="code-block">
+                <span class="code-label">Markdown</span>
+                <pre>## Goal
+Implement a new caching layer for API responses
+
+## Acceptance Criteria
+- [ ] Cache implementation using Redis
+- [ ] 5-minute TTL for all cached responses
+- [ ] Cache invalidation on data updates
+- [ ] Performance improvement of at least 50%
+
+## Technical Specs
+- Use Redis with node-redis client
+- Implement as Express middleware
+- Add cache headers to responses
+- Include cache hit/miss metrics</pre>
+            </div>
+
+            <h4>Step 3: Autonomous Execution</h4>
+            <p>Claude Code SDK takes over with full autonomy:</p>
+            
+            <div class="alert alert-info">
+                <strong>What happens during execution:</strong>
+                <ul>
+                    <li>Claude reads the entire codebase context</li>
+                    <li>Analyzes existing patterns and conventions</li>
+                    <li>Implements the solution following best practices</li>
+                    <li>Runs tests and validates the implementation</li>
+                    <li>Creates comprehensive commit messages</li>
+                </ul>
+            </div>
+
+            <h4>Step 4: Pull Request Creation</h4>
+            <p>The agent automatically:</p>
+            <ol>
+                <li>Creates a feature branch from main</li>
+                <li>Commits all changes with detailed messages</li>
+                <li>Pushes to GitHub</li>
+                <li>Creates a pull request with:
+                    <ul>
+                        <li>Link to the original issue</li>
+                        <li>Summary of changes</li>
+                        <li>Test results</li>
+                        <li>Any relevant notes</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <h3>Error Handling and Recovery</h3>
+            <p>The agent is designed to be resilient:</p>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>Graceful Degradation</h4>
+                    <p>Errors in one issue don't stop the agent - it logs and continues</p>
+                </div>
+                <div class="feature-card">
+                    <h4>State Persistence</h4>
+                    <p>Execution history is maintained for debugging and analysis</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Signal Handling</h4>
+                    <p>SIGINT/SIGTERM complete current work before stopping</p>
+                </div>
+            </div>
+
+            <h3>GitHub Token Requirements</h3>
+            <p>The agent requires specific GitHub token permissions depending on the adapter:</p>
+
+            <table>
+                <tr>
+                    <th>Adapter</th>
+                    <th>Required Scopes</th>
+                    <th>Purpose</th>
+                </tr>
+                <tr>
+                    <td>GitHub Labels (default)</td>
+                    <td><code>repo</code>, <code>read:org</code></td>
+                    <td>Full repository access for issues and labels</td>
+                </tr>
+                <tr>
+                    <td>GitHub Projects</td>
+                    <td><code>project</code>, <code>read:project</code>, <code>repo</code></td>
+                    <td>Projects v2 API access and repository access</td>
+                </tr>
+            </table>
+
+            <div class="alert alert-warning">
+                <strong>Common Permission Issues:</strong>
+                <ul>
+                    <li><strong>"Resource not accessible by personal access token"</strong> - Token lacks required permissions</li>
+                    <li><strong>Solution:</strong> Run <code>gh auth refresh -s repo,read:org</code> for labels adapter</li>
+                    <li><strong>Alternative:</strong> Create new token at <a href="https://github.com/settings/tokens" target="_blank">GitHub Settings</a></li>
+                </ul>
+            </div>
+
+            <div class="code-block">
+                <span class="code-label">Authentication Commands</span>
+                <pre># Initial setup
+gh auth login
+
+# For GitHub Labels adapter (default)
+gh auth refresh -s repo,read:org
+
+# For GitHub Projects adapter
+gh auth refresh -s project,read:project</pre>
+            </div>
+        </section>
+
+        <!-- NPM Project Section -->
+        <section id="npm-project" class="section">
+            <h2>NPM Project Structure</h2>
+            
+            <h3>Package Configuration</h3>
+            <p>Agent Antonova is a modern Node.js project using ES modules:</p>
+
+            <div class="code-block">
+                <span class="code-label">package.json</span>
+                <pre>{
+  "name": "agent-antonova",
+  "version": "1.0.0",
+  "type": "module",  // ES modules enabled
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --inspect index.js",
+    "setup": "npm install && ./scripts/setup-labels.sh",
+    "setup-project": "node scripts/setup-github-project.js",
+    "priority": "node scripts/priority-cli.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/claude-code": "^1.0.41",
+    "@deepgram/sdk": "^4.7.0",
+    "puppeteer": "^24.11.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}</pre>
+            </div>
+
+            <h3>Dependencies Explained</h3>
+            
+            <h4>@anthropic-ai/claude-code (^1.0.41)</h4>
+            <p>The core dependency that enables autonomous operation:</p>
+            <ul>
+                <li>Provides the <code>query()</code> function for Claude interactions</li>
+                <li>Handles authentication with Claude API</li>
+                <li>Manages streaming responses</li>
+                <li>Includes TypeScript definitions</li>
+            </ul>
+
+            <h4>@deepgram/sdk (^4.7.0)</h4>
+            <p>Used for audio documentation features:</p>
+            <ul>
+                <li>Converts journey documentation to speech</li>
+                <li>Creates audio narratives of development progress</li>
+                <li>Part of the documentation generation system</li>
+            </ul>
+
+            <h4>puppeteer (^24.11.2)</h4>
+            <p>Powers the journey visualization system:</p>
+            <ul>
+                <li>Captures screenshots of pull requests</li>
+                <li>Generates visual timelines</li>
+                <li>Creates documentation artifacts</li>
+            </ul>
+
+            <h3>Project File Structure</h3>
+            
+            <div class="code-block">
+                <span class="code-label">Directory Structure</span>
+                <pre>agent-antonova/
+├── src/                          # Source code
+│   ├── autonomous-agent.js       # Main agent class
+│   ├── issue-engine.js          # Issue management
+│   ├── adapters/                # Adapter implementations
+│   │   ├── issue-adapter.js     # Base class
+│   │   ├── github-labels-adapter.js
+│   │   └── github-projects-adapter.js
+│   ├── config/                  # Configuration
+│   │   └── repo-config.js       # Repository settings
+│   └── utils/                   # Utilities
+│       └── github-graphql.js    # GraphQL helpers
+├── scripts/                     # Utility scripts
+│   ├── setup-labels.sh         # GitHub label setup
+│   ├── setup-github-project.js # Project board setup
+│   ├── priority-cli.js         # Priority management
+│   └── [journey scripts]       # Documentation tools
+├── docs/                       # Documentation
+│   ├── journey.html           # Visual timeline
+│   └── readme.html            # This file
+├── devcontainer/              # Development environment
+│   ├── Dockerfile
+│   ├── docker-compose.yml
+│   └── init-firewall.sh
+├── .antonova/                 # Repository config
+│   └── config.json           # Adapter selection
+├── index.js                  # Entry point
+├── package.json              # NPM configuration
+├── Makefile                  # Dev commands
+└── CLAUDE.md                 # AI instructions</pre>
+            </div>
+
+            <h3>NPM Scripts Detailed</h3>
+            
+            <table>
+                <tr>
+                    <th>Script</th>
+                    <th>Command</th>
+                    <th>Purpose</th>
+                </tr>
+                <tr>
+                    <td><code>npm start</code></td>
+                    <td>node index.js</td>
+                    <td>Start the autonomous agent in production mode</td>
+                </tr>
+                <tr>
+                    <td><code>npm run dev</code></td>
+                    <td>node --inspect index.js</td>
+                    <td>Start with debugging enabled (port 9229)</td>
+                </tr>
+                <tr>
+                    <td><code>npm run setup</code></td>
+                    <td>npm install && ./scripts/setup-labels.sh</td>
+                    <td>Initial repository setup</td>
+                </tr>
+                <tr>
+                    <td><code>npm run priority</code></td>
+                    <td>node scripts/priority-cli.js</td>
+                    <td>Interactive priority management tool</td>
+                </tr>
+            </table>
+
+            <h3>ES Modules Configuration</h3>
+            <p>The project uses modern ES modules (<code>"type": "module"</code>):</p>
+            
+            <div class="alert alert-success">
+                <strong>Benefits of ES Modules:</strong>
+                <ul>
+                    <li>Native <code>import/export</code> syntax</li>
+                    <li>Better tree-shaking and optimization</li>
+                    <li>Consistent with frontend JavaScript</li>
+                    <li>Future-proof module system</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Implementation Details Section -->
+        <section id="implementation" class="section">
+            <h2>Implementation Details</h2>
+            
+            <h3>Configuration System</h3>
+            <p>Repository configuration is managed through <code>.antonova/config.json</code>:</p>
+
+            <div class="code-block">
+                <span class="code-label">JSON</span>
+                <pre>{
+  "adapter": "github-projects",  // or "github-labels"
+  "github": {
+    "owner": "nuvemlabs",
+    "repo": "agent.antonova",
+    "projectNumber": 1
+  },
+  "prioritization": {
+    "formula": "default",
+    "statuses": {
+      "backlog": ["Backlog"],
+      "ready": ["Ready"],
+      "inProgress": ["In Progress"],
+      "blocked": ["Blocked"],
+      "review": ["Review"],
+      "done": ["Done"]
+    },
+    "impactMap": {
+      "Critical": 40,
+      "High": 30,
+      "Medium": 20,
+      "Low": 10
+    },
+    "urgencyMap": {
+      "Immediate": 4,
+      "Soon": 3,
+      "Normal": 2,
+      "Eventually": 1
+    },
+    "effortMap": {
+      "XS": 1,
+      "S": 2,
+      "M": 3,
+      "L": 5,
+      "XL": 8
+    }
+  }
+}</pre>
+            </div>
+
+            <h3>Priority Calculation Deep Dive</h3>
+            <p>The priority system uses a sophisticated formula:</p>
+
+            <div class="architecture-diagram">
+                <h4>Priority Score = (Impact × Urgency × 10) ÷ Effort + Manual Adjustment</h4>
+                
+                <div class="code-block">
+                    <pre>Example Calculations:
+
+Critical Bug (High urgency, Small effort):
+(40 × 3 × 10) ÷ 2 + 0 = 600 points
+
+New Feature (Medium impact, Normal urgency, Large effort):
+(20 × 2 × 10) ÷ 5 + 0 = 80 points
+
+Tech Debt (Low impact, Eventually, Medium effort):
+(10 × 1 × 10) ÷ 3 + 0 = 33.33 points</pre>
+                </div>
+            </div>
+
+            <h3>Git Workflow Implementation</h3>
+            <p>The agent follows a structured Git workflow:</p>
+
+            <ol>
+                <li><strong>Branch Creation:</strong> <code>feature/issue-{number}-{slug}</code></li>
+                <li><strong>Commit Convention:</strong> Descriptive messages with issue reference</li>
+                <li><strong>PR Template:</strong> Automatically filled with context and changes</li>
+                <li><strong>Signature:</strong> All commits include "Generated with Claude Code"</li>
+            </ol>
+
+            <h3>Development Environment</h3>
+            <p>The project includes a sophisticated devcontainer setup:</p>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>Network Security</h4>
+                    <p>Firewall restricts access to only essential domains (GitHub, npm, Anthropic)</p>
+                </div>
+                <div class="feature-card">
+                    <h4>SSH Access</h4>
+                    <p>Long-running container with SSH server for remote development</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Make Commands</h4>
+                    <p>Simplified container management through Makefile targets</p>
+                </div>
+            </div>
+
+            <h3>Security Considerations</h3>
+            
+            <div class="alert alert-warning">
+                <strong>Important Security Notes:</strong>
+                <ul>
+                    <li>The agent runs with <code>acceptAll</code> permissions - ensure repository access is restricted</li>
+                    <li>Never commit API keys or secrets to the repository</li>
+                    <li>Use environment variables for sensitive configuration</li>
+                    <li>Review all agent-generated pull requests before merging</li>
+                    <li>Consider running in isolated environments for sensitive codebases</li>
+                </ul>
+            </div>
+
+            <h3>Performance Optimizations</h3>
+            <ul>
+                <li><strong>Efficient Querying:</strong> GraphQL for Projects adapter minimizes API calls</li>
+                <li><strong>Caching:</strong> Issue data cached during execution</li>
+                <li><strong>Streaming:</strong> Claude responses processed as they arrive</li>
+                <li><strong>Batch Operations:</strong> Git operations batched where possible</li>
+            </ul>
+
+            <h3>Future Extensibility</h3>
+            <p>The architecture supports future enhancements:</p>
+
+            <table>
+                <tr>
+                    <th>Component</th>
+                    <th>Extension Point</th>
+                    <th>Possibilities</th>
+                </tr>
+                <tr>
+                    <td>Adapters</td>
+                    <td>IssueAdapter base class</td>
+                    <td>Jira, Linear, Asana, Custom systems</td>
+                </tr>
+                <tr>
+                    <td>Prioritization</td>
+                    <td>Formula configuration</td>
+                    <td>ML-based scoring, team velocity</td>
+                </tr>
+                <tr>
+                    <td>Notifications</td>
+                    <td>Event hooks</td>
+                    <td>SMS, Slack, Discord, webhooks</td>
+                </tr>
+                <tr>
+                    <td>Monitoring</td>
+                    <td>Execution history</td>
+                    <td>Dashboards, metrics, analytics</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- Summary Section -->
+        <section class="section">
+            <h2>Summary</h2>
+            
+            <p>Agent Antonova represents a fundamental shift in software development - from human-driven to AI-driven workflows. By combining the Claude Code SDK's powerful capabilities with a well-architected autonomous system, it demonstrates how AI can handle the complete software development lifecycle.</p>
+
+            <div class="highlight" style="text-align: center; font-size: 1.2em; margin: 40px 0;">
+                Software that writes itself - continuously, reliably, autonomously.
+            </div>
+
+            <p>The system's modular architecture, sophisticated prioritization, and resilient design make it suitable for real-world development workflows. As AI capabilities continue to evolve, Agent Antonova provides a glimpse into the future of software engineering.</p>
+        </section>
+    </div>
+</body>
+</html>

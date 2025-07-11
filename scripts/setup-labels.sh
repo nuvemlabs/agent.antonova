@@ -10,6 +10,7 @@ gh label create "priority-medium" --color "FBCA04" --description "Medium priorit
 gh label create "priority-low" --color "0E8A16" --description "Low priority - can wait" -R nuvemlabs/agent.antonova
 
 # Status labels
+gh label create "backlog" --color "C5DEF5" --description "Needs refinement before development" -R nuvemlabs/agent.antonova
 gh label create "ready" --color "0366D6" --description "Ready to be worked on" -R nuvemlabs/agent.antonova
 gh label create "in-progress" --color "D4C5F9" --description "Currently being worked on" -R nuvemlabs/agent.antonova
 gh label create "blocked" --color "E4E669" --description "Blocked by dependencies or issues" -R nuvemlabs/agent.antonova

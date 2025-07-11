@@ -1,17 +1,56 @@
-import { exec } from 'child_process';
-import { promisify } from 'util';
-
-const execAsync = promisify(exec);
+import { loadRepoConfig, createAdapter } from "./config/repo-config.js";
+import { GitHubLabelsAdapter } from "./adapters/github-labels-adapter.js";
 
 /**
- * GitHub Issue Query Engine
- * Finds the highest priority ready issue for the agent to work on
+ * Issue Engine - Adapter-based issue management
+ * Automatically selects the appropriate adapter based on repository configuration
  */
 export class IssueEngine {
-  constructor(repoOwner = 'nuvemlabs', repoName = 'agent.antonova') {
+  constructor(
+    repoOwner = "nuvemlabs",
+    repoName = "agent.antonova",
+    configOverrides = {}
+  ) {
     this.repoOwner = repoOwner;
     this.repoName = repoName;
     this.repo = `${repoOwner}/${repoName}`;
+    this.configOverrides = configOverrides;
+    this.adapter = null;
+    this.initialized = false;
+  }
+
+  /**
+   * Initialize the engine with the appropriate adapter
+   */
+  async initialize() {
+    if (this.initialized) return;
+
+    try {
+      // Try to load repository configuration
+      const config = await loadRepoConfig(".", {
+        ...this.configOverrides,
+        github: {
+          owner: this.repoOwner,
+          repo: this.repoName,
+          ...this.configOverrides.github,
+        },
+      });
+      console.log(config);
+
+      console.log(`🔧 Using ${config.adapter} adapter for ${this.repo}`);
+      this.adapter = await createAdapter(config);
+    } catch (error) {
+      // Fallback to labels adapter if config loading fails
+      console.log(`📝 No config found, using default GitHub labels adapter`);
+      this.adapter = new GitHubLabelsAdapter({
+        github: {
+          owner: this.repoOwner,
+          repo: this.repoName,
+        },
+      });
+    }
+
+    this.initialized = true;
   }
 
   /**
@@ -19,92 +58,59 @@ export class IssueEngine {
    * @returns {Object|null} Issue object or null if no ready issues
    */
   async getNextIssue() {
+    await this.initialize();
+
     try {
-      console.log('🔍 Searching for highest priority ready issue...');
-      
-      // Query for ready issues, sorted by priority
-      const issues = await this.queryReadyIssues();
-      
-      if (issues.length === 0) {
-        console.log('📭 No ready issues found');
+      console.log("🔍 Searching for highest priority ready issue...");
+      const issue = await this.adapter.getNextIssue();
+
+      if (!issue) {
+        console.log("📭 No ready issues found");
         return null;
       }
 
-      // Sort by priority and return the highest priority issue
-      const prioritizedIssue = this.prioritizeIssues(issues)[0];
-      
-      console.log(`🎯 Found issue #${prioritizedIssue.number}: ${prioritizedIssue.title}`);
-      console.log(`   Priority: ${this.getIssuePriority(prioritizedIssue)}`);
-      console.log(`   Labels: ${prioritizedIssue.labels.map(label => label.name).join(', ')}`);
-      
-      return prioritizedIssue;
+      console.log(`🎯 Found issue #${issue.number}: ${issue.title}`);
+      console.log(`   Priority Score: ${issue.priority}`);
+      if (issue.labels?.length > 0) {
+        console.log(`   Labels: ${issue.labels.join(", ")}`);
+      }
+
+      return issue;
     } catch (error) {
-      console.error('❌ Error fetching next issue:', error.message);
+      console.error("❌ Error fetching next issue:", error.message);
       return null;
     }
   }
 
   /**
-   * Query GitHub for issues with 'ready' label
+   * Query for ready issues
    * @returns {Array} Array of issue objects
    */
   async queryReadyIssues() {
-    try {
-      const command = `gh issue list -R ${this.repo} --label "ready" --state open --json number,title,body,labels,url,createdAt`;
-      const { stdout } = await execAsync(command);
-      
-      if (!stdout.trim()) {
-        return [];
-      }
-      
-      return JSON.parse(stdout);
-    } catch (error) {
-      console.error('❌ Error querying ready issues:', error.message);
-      return [];
-    }
+    await this.initialize();
+    return this.adapter.getAllIssues({ status: "ready" });
   }
 
   /**
-   * Prioritize issues based on priority labels
+   * Prioritize issues (for compatibility)
    * @param {Array} issues Array of issue objects
    * @returns {Array} Sorted array with highest priority first
    */
   prioritizeIssues(issues) {
-    const priorityOrder = {
-      'priority-critical': 1,
-      'priority-high': 2,
-      'priority-medium': 3,
-      'priority-low': 4,
-      'default': 5
-    };
-
     return issues.sort((a, b) => {
-      const aPriority = this.getIssuePriority(a);
-      const bPriority = this.getIssuePriority(b);
-      
-      const aOrder = priorityOrder[aPriority] || priorityOrder.default;
-      const bOrder = priorityOrder[bPriority] || priorityOrder.default;
-      
-      // If same priority, sort by creation date (older first)
-      if (aOrder === bOrder) {
-        return new Date(a.createdAt) - new Date(b.createdAt);
-      }
-      
-      return aOrder - bOrder;
+      const aPriority = a.priority || 0;
+      const bPriority = b.priority || 0;
+      return bPriority - aPriority;
     });
   }
 
   /**
-   * Extract priority from issue labels
+   * Get issue priority (for compatibility)
    * @param {Object} issue Issue object
-   * @returns {string} Priority level
+   * @returns {number|string} Priority value
    */
   getIssuePriority(issue) {
-    const labels = issue.labels || [];
-    const priorityLabel = labels.find(label => 
-      label.name && label.name.startsWith('priority-')
-    );
-    return priorityLabel ? priorityLabel.name : 'default';
+    return issue.priority || "default";
   }
 
   /**
@@ -113,19 +119,7 @@ export class IssueEngine {
    * @returns {Object} Parsed issue data
    */
   parseIssue(issue) {
-    const body = issue.body || '';
-    
-    return {
-      number: issue.number,
-      title: issue.title,
-      url: issue.url,
-      labels: (issue.labels || []).map(label => label.name),
-      priority: this.getIssuePriority(issue),
-      goal: this.extractSection(body, 'Goal'),
-      acceptanceCriteria: this.extractAcceptanceCriteria(body),
-      technicalSpecs: this.extractSection(body, 'Technical Specs'),
-      rawBody: body
-    };
+    return this.adapter.parseIssue(issue);
   }
 
   /**
@@ -135,9 +129,7 @@ export class IssueEngine {
    * @returns {string} Section content
    */
   extractSection(body, sectionName) {
-    const regex = new RegExp(`## ${sectionName}\\s*([\\s\\S]*?)(?=##|$)`, 'i');
-    const match = body.match(regex);
-    return match ? match[1].trim() : '';
+    return this.adapter.extractSection(body, sectionName);
   }
 
   /**
@@ -146,46 +138,29 @@ export class IssueEngine {
    * @returns {Array} Array of acceptance criteria
    */
   extractAcceptanceCriteria(body) {
-    const section = this.extractSection(body, 'Acceptance Criteria');
-    const criteriaRegex = /- \[ \] (.*)/g;
-    const criteria = [];
-    let match;
-    
-    while ((match = criteriaRegex.exec(section)) !== null) {
-      criteria.push({
-        text: match[1].trim(),
-        completed: false
-      });
-    }
-    
-    return criteria;
+    return this.adapter.extractAcceptanceCriteria(body);
   }
 
   /**
    * Update issue status
    * @param {number} issueNumber Issue number
-   * @param {string} status New status (in-progress, review, etc.)
+   * @param {string} status New status (backlog, ready, in-progress, blocked, review, done)
    */
   async updateIssueStatus(issueNumber, status) {
+    await this.initialize();
+
     try {
       console.log(`🏷️  Updating issue #${issueNumber} status to: ${status}`);
-      
-      // Remove existing status labels
-      const statusLabels = ['ready', 'in-progress', 'blocked', 'review'];
-      for (const label of statusLabels) {
-        try {
-          await execAsync(`gh issue edit ${issueNumber} -R ${this.repo} --remove-label "${label}"`);
-        } catch (error) {
-          // Ignore errors for labels that don't exist
-        }
+      const success = await this.adapter.updateIssueStatus(issueNumber, status);
+
+      if (success) {
+        console.log(`✅ Issue #${issueNumber} status updated to: ${status}`);
       }
-      
-      // Add new status label
-      await execAsync(`gh issue edit ${issueNumber} -R ${this.repo} --add-label "${status}"`);
-      
-      console.log(`✅ Issue #${issueNumber} status updated to: ${status}`);
     } catch (error) {
-      console.error(`❌ Error updating issue #${issueNumber} status:`, error.message);
+      console.error(
+        `❌ Error updating issue #${issueNumber} status:`,
+        error.message
+      );
     }
   }
 
@@ -194,25 +169,59 @@ export class IssueEngine {
    * @returns {Object} Issues grouped by status
    */
   async getIssuesSummary() {
+    await this.initialize();
+
     try {
-      const command = `gh issue list -R ${this.repo} --state open --json number,title,labels,url --limit 100`;
-      const { stdout } = await execAsync(command);
-      
-      if (!stdout.trim()) {
-        return { ready: [], inProgress: [], blocked: [], review: [] };
-      }
-      
-      const allIssues = JSON.parse(stdout);
-      
-      return {
-        ready: allIssues.filter(issue => issue.labels.some(label => label.name === 'ready')),
-        inProgress: allIssues.filter(issue => issue.labels.some(label => label.name === 'in-progress')),
-        blocked: allIssues.filter(issue => issue.labels.some(label => label.name === 'blocked')),
-        review: allIssues.filter(issue => issue.labels.some(label => label.name === 'review'))
-      };
+      return await this.adapter.getIssuesSummary();
     } catch (error) {
-      console.error('❌ Error getting issues summary:', error.message);
-      return { ready: [], inProgress: [], blocked: [], review: [] };
+      console.error("❌ Error getting issues summary:", error.message);
+      return {
+        backlog: [],
+        ready: [],
+        inProgress: [],
+        blocked: [],
+        review: [],
+        done: [],
+      };
+    }
+  }
+
+  /**
+   * Set priority for an issue (for GitHub Projects adapter)
+   * @param {number} issueNumber Issue number
+   * @param {number} priorityScore Priority score
+   */
+  async setIssuePriority(issueNumber, priorityScore) {
+    await this.initialize();
+
+    if (typeof this.adapter.setIssuePriority !== "function") {
+      console.warn(
+        "⚠️  Current adapter does not support setting priority scores"
+      );
+      return false;
+    }
+
+    try {
+      console.log(
+        `🎯 Setting issue #${issueNumber} priority to: ${priorityScore}`
+      );
+      const success = await this.adapter.setIssuePriority(
+        issueNumber,
+        priorityScore
+      );
+
+      if (success) {
+        console.log(
+          `✅ Issue #${issueNumber} priority updated to: ${priorityScore}`
+        );
+      }
+      return success;
+    } catch (error) {
+      console.error(
+        `❌ Error setting issue #${issueNumber} priority:`,
+        error.message
+      );
+      return false;
     }
   }
 }

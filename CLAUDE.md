@@ -4,94 +4,143 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-This is the "antonova" project - a Node.js application that demonstrates the integration of the Claude Code SDK for programmatic interactions with Claude Code functionality. The project includes a secure devcontainer environment with network restrictions and implements a plan-then-execute workflow pattern.
+This is "Agent Antonova" - a fully autonomous development agent that continuously processes GitHub issues without human intervention. The agent runs in an infinite loop, automatically selecting, implementing, and submitting pull requests for issues based on priority.
 
 ## Architecture
 
-- **Node.js Application**: Uses ES modules with the Claude Code SDK
-- **Devcontainer Setup**: Secure containerized development environment with network firewall
-- **SSH-Enabled Container**: Long-running container option with SSH server for remote access
-- **Plan-Execute Pattern**: Two-phase workflow where Claude first plans, then executes with user approval
-- **Interactive CLI**: Command-line interface for user interaction and approval workflows
+### Core Components
+
+- **AutonomousAgent** (`src/autonomous-agent.js`): Main execution loop that runs indefinitely. Manages the complete lifecycle from issue selection to PR creation.
+- **IssueEngine** (`src/issue-engine.js`): Adapter-based issue management system that auto-detects the adapter from `.antonova/config.json`
+- **Adapters** (`src/adapters/`): Plugin architecture supporting multiple issue tracking systems:
+  - `GitHubProjectsAdapter`: GraphQL-based GitHub Projects v2 integration
+  - `GitHubLabelsAdapter`: Traditional label-based prioritization
+  - Base `IssueAdapter` class for extensibility
+
+### Priority System
+
+The agent uses a sophisticated scoring algorithm: **(Impact × Urgency × 10) ÷ Effort + Manual Adjustment**
+
+- **Impact**: Critical (40), High (30), Medium (20), Low (10)
+- **Urgency**: Immediate (4), Soon (3), Normal (2), Eventually (1)  
+- **Effort**: XS (1), S (2), M (3), L (5), XL (8)
+- **Manual Adjustment**: -100 to +100 via priority CLI tool
 
 ## Common Commands
 
 ```bash
-# Install dependencies
-npm install
-
-# Run the plan-execute tool
+# Start the autonomous agent (runs indefinitely)
 npm start
-# or
-node index.js
 
-# View installed packages
-npm list
+# Development mode with debugging
+npm run dev
 
-# Quick setup (first time)
-./setup.sh
+# Setup GitHub labels (first time only)
+npm run setup
 
-# Development container commands (using Makefile - recommended)
-make start                   # Start SSH-enabled container
-make ssh                     # SSH into container (password: claudedev)
-make stop                    # Stop container
-make ssh-copy-id             # Setup SSH key authentication
-make ssh-key                 # SSH with key authentication
+# Setup GitHub Projects board
+npm run setup-project
 
-# Manual Docker commands (alternative)
-# Build and run the devcontainer (interactive)
-docker build -t antonova-dev devcontainer/
-docker run -it --cap-add=NET_ADMIN --cap-add=NET_RAW antonova-dev
+# Manage issue priorities manually
+npm run priority
 
-# SSH-enabled container (runs indefinitely)
-docker-compose -f devcontainer/docker-compose.ssh.yml up -d
-ssh -p 2222 node@localhost  # Password: claudedev
+# Container management (Makefile)
+make start          # Start SSH-enabled container
+make ssh            # SSH into container (password: claudedev)
+make stop           # Stop container
+make status         # Check container status
 
-# Inside devcontainer - firewall management
+# Inside container - reinitialize network restrictions
 sudo /usr/local/bin/init-firewall.sh
+
+# GitHub authentication and permissions
+gh auth login                                    # Initial authentication
+gh auth refresh -s repo,read:org               # For github-labels adapter
+gh auth refresh -s project,read:project        # For github-projects adapter
 ```
 
-## Dependencies
+## Development Workflow
 
-- `@anthropic-ai/claude-code` - Official Claude Code SDK for programmatic access
+The agent follows this continuous cycle:
 
-## Code Structure
+1. Query GitHub for highest priority "ready" issue
+2. Parse issue structure (Goal, Acceptance Criteria, Technical Specs)
+3. Update issue status to "in-progress"
+4. Execute work autonomously using Claude Code SDK (`permissionMode: 'acceptAll'`)
+5. Validate completion against acceptance criteria
+6. Create pull request with comprehensive documentation
+7. Update issue status to "review"
+8. Loop immediately to next issue
 
-The application demonstrates Claude Code SDK usage patterns:
-- **ES Module Setup**: Uses `"type": "module"` in package.json for ES module support
-- **Query Function**: Uses the `query()` function with configurable options (maxTurns, permissionMode)
-- **Message Streaming**: Iterates through streaming responses to collect assistant messages
-- **Response Extraction**: Extracts text content from assistant messages for display
-- **Two-Phase Workflow**: Separate functions for planning and execution phases
+## Issue Format
 
-### Core Functions
+Issues must follow this structure for optimal agent processing:
 
-- `getPlanFromClaude()`: Requests a plan using `permissionMode: 'plan'` and `maxTurns: 1`
-- `executeWithClaude()`: Executes the approved plan using `permissionMode: 'acceptEdits'` and `maxTurns: 10`
-- `getUserInput()`: Handles command-line user interaction with readline interface
-- `main()`: Orchestrates the complete plan-approve-execute workflow
+```markdown
+## Goal
+Clear description of what needs to be accomplished.
 
-## Devcontainer Security
+## Acceptance Criteria
+- [ ] Specific, testable requirements
+- [ ] That the agent can validate
+- [ ] When implementation is complete
 
-The devcontainer implements network restrictions through iptables firewall:
-- **Allowed Domains**: GitHub, npm registry, Anthropic API, Sentry, Statsig
-- **IP Resolution**: Dynamic resolution and aggregation of allowed IP ranges
-- **Verification**: Automated testing to ensure firewall rules work correctly
-- **Host Network**: Local development network access maintained
+## Technical Specs
+Detailed technical requirements and implementation guidance.
+```
 
-## Key Features Demonstrated
+## Configuration
 
-1. **Plan-Then-Execute Pattern**: Claude first generates a plan, user approves, then execution begins
-2. **Permission Modes**: Different Claude Code SDK permission modes for planning vs execution
-3. **Interactive CLI**: Real-time user interaction and approval workflows
-4. **Network Security**: Restricted container environment with firewall controls
-5. **Message Processing**: Extracting and displaying assistant responses with progress indicators
+### Repository Configuration (`.antonova/config.json`)
 
-## Development Notes
+- **adapter**: "github-projects" or "github-labels"
+- **github**: Repository owner, name, and project number
+- **prioritization**: Status mappings, priority formulas, and scoring parameters
 
-- The project uses ES modules (import/export syntax)
-- Requires `"type": "module"` in package.json for proper import support
-- Assistant responses are extracted from message.message.content array
-- Planning phase uses `maxTurns: 1` to get a single comprehensive plan
-- Execution phase uses `maxTurns: 10` to allow for complex multi-step operations
-- Devcontainer requires `NET_ADMIN` and `NET_RAW` capabilities for firewall management
+### Environment Variables
+
+Key configurations in `.env`:
+- `GITHUB_OWNER` / `GITHUB_REPO`: Repository details
+- `LOOP_INTERVAL`: Time between issue checks (default: 30000ms)
+- `MAX_TURNS`: Claude Code SDK max turns per issue (default: 15)
+- `PERMISSION_MODE`: Always set to "acceptAll" for full autonomy
+
+## Key Implementation Details
+
+1. **Error Recovery**: The agent includes comprehensive error handling to continue operation through failures
+2. **State Persistence**: Execution history is tracked in memory for debugging
+3. **Graceful Shutdown**: Handles SIGINT/SIGTERM to complete current work before stopping
+4. **Network Security**: Devcontainer includes firewall restrictions allowing only essential domains
+5. **Adapter Detection**: Automatically loads the correct adapter based on config.json
+
+## Testing & Validation
+
+- No automated tests currently - manual testing is the primary method
+- Test by creating issues with proper format and "ready" label
+- Monitor real-time console output for execution progress
+- Check GitHub for automatic PR creation and status updates
+
+## GitHub Token Requirements
+
+The agent requires specific GitHub token permissions depending on the adapter:
+
+### GitHub Labels Adapter (default)
+- `repo` - Full repository access for reading/writing issues and labels
+- `read:org` - Read organization membership (if repository is in an organization)
+
+### GitHub Projects Adapter
+- `project` - Full project access for GitHub Projects v2
+- `read:project` - Read project data and fields
+- `repo` - Repository access for issues
+
+### Common Issues
+- **"Resource not accessible by personal access token"**: Token lacks required permissions
+- **Solution**: Run `gh auth refresh -s repo,read:org` (for labels) or `gh auth refresh -s project,read:project` (for projects)
+- **Alternative**: Create a new token at https://github.com/settings/tokens with required scopes
+
+## Security Considerations
+
+- Runs with full `acceptAll` permissions - ensure repository access is properly restricted
+- Network-restricted devcontainer environment for additional security
+- No secrets or API keys should be committed to the repository
+- Agent commits include signature: "Generated with Claude Code"

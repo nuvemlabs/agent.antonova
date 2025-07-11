@@ -10,6 +10,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "agent": "node index.js",
     "setup": "npm install && ./scripts/setup-labels.sh",
+    "setup-project": "node scripts/setup-github-project.js",
+    "priority": "node scripts/priority-cli.js",
     "serve-journey": "node scripts/serve-journey.js",
     "audio": "node scripts/generate-journey-audio.js"
   },

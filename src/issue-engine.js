@@ -156,11 +156,14 @@ export class IssueEngine {
       if (success) {
         console.log(`✅ Issue #${issueNumber} status updated to: ${status}`);
       }
+      
+      return success;
     } catch (error) {
       console.error(
         `❌ Error updating issue #${issueNumber} status:`,
         error.message
       );
+      return false;
     }
   }
 

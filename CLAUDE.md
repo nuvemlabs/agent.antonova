@@ -133,10 +133,17 @@ The agent requires specific GitHub token permissions depending on the adapter:
 - `read:project` - Read project data and fields
 - `repo` - Repository access for issues
 
+### Fine-grained Token Limitation (Current Issue)
+- **Problem**: Fine-grained Personal Access Tokens cannot access GitHub Projects v2 GraphQL API
+- **Status**: Known GitHub limitation as of 2025 - no project permissions available for fine-grained tokens
+- **Current Solution**: Agent detects fine-grained tokens and provides manual update instructions
+- **Behavior**: Issues are processed normally, but Status field updates require manual project board interaction
+
 ### Common Issues
 - **"Resource not accessible by personal access token"**: Token lacks required permissions
 - **Solution**: Run `gh auth refresh -s repo,read:org` (for labels) or `gh auth refresh -s project,read:project` (for projects)
 - **Alternative**: Create a new token at https://github.com/settings/tokens with required scopes
+- **Fine-grained Token Projects**: Agent provides manual instructions for updating project board Status field
 
 ## Security Considerations
 

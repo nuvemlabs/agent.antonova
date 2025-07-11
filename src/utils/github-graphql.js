@@ -12,7 +12,11 @@ const execAsync = promisify(exec);
 export async function graphql(query, variables = {}) {
   try {
     const variablesJson = Object.keys(variables).length > 0 
-      ? `-F ${Object.entries(variables).map(([k, v]) => `${k}=${v}`).join(' -F ')}`
+      ? `-F ${Object.entries(variables).map(([k, v]) => {
+          // Handle complex objects by JSON stringifying them
+          const value = typeof v === 'object' && v !== null ? JSON.stringify(v) : v;
+          return `${k}=${value}`;
+        }).join(' -F ')}`
       : '';
     
     const command = `gh api graphql ${variablesJson} -f query='${query}'`;
@@ -33,8 +37,8 @@ export const queries = {
    * Get project items with custom fields
    */
   getProjectItems: `
-    query GetProjectItems($owner: String!, $name: String!, $projectNumber: Int!) {
-      repository(owner: $owner, name: $name) {
+    query GetProjectItems($owner: String!, $projectNumber: Int!) {
+      user(login: $owner) {
         projectV2(number: $projectNumber) {
           id
           title
@@ -107,8 +111,8 @@ export const queries = {
    * Get project fields configuration
    */
   getProjectFields: `
-    query GetProjectFields($owner: String!, $name: String!, $projectNumber: Int!) {
-      repository(owner: $owner, name: $name) {
+    query GetProjectFields($owner: String!, $projectNumber: Int!) {
+      user(login: $owner) {
         projectV2(number: $projectNumber) {
           id
           fields(first: 50) {

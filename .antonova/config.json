@@ -9,10 +9,10 @@
     "formula": "default",
     "statuses": {
       "backlog": ["Backlog"],
-      "ready": ["Ready", "ready"],
+      "ready": ["Todo", "Ready", "ready"],
       "inProgress": ["In Progress", "in-progress"],
-      "blocked": ["Blocked", "blocked"],
-      "review": ["Review", "review"],
+      "blocked": ["In Progress", "Blocked", "blocked"],
+      "review": ["In Progress", "Review", "review"],
       "done": ["Done", "done"]
     },
     "impactMap": {

@@ -548,6 +548,7 @@ export class GitHubProjectsAdapter extends IssueAdapter {
       'backlog': 'Todo',
       'ready': 'Todo', 
       'inProgress': 'In Progress',
+      'in-progress': 'In Progress',
       'blocked': 'In Progress', // Project has no blocked column
       'review': 'In Progress',  // Project has no review column
       'done': 'Done'
@@ -703,7 +704,14 @@ export class GitHubProjectsAdapter extends IssueAdapter {
     const statusValue = fields['Status'];
     if (!statusValue) return 'unknown';
     
-    // Map project board status to our internal status
+    // Check against our configured status mappings
+    for (const [internalStatus, statusOptions] of Object.entries(this.statusMapping)) {
+      if (statusOptions.some(option => option.toLowerCase() === statusValue.toLowerCase())) {
+        return internalStatus;
+      }
+    }
+    
+    // Fallback to direct mapping
     const projectStatusMap = {
       'Todo': 'ready',
       'In Progress': 'inProgress', 

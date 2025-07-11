@@ -1,0 +1,197 @@
+{
+  "timestamp": "2025-07-11T14:18:34.146Z",
+  "adapter": "github-projects",
+  "config": {
+    "adapter": "github-projects",
+    "github": {
+      "owner": "nuvemlabs",
+      "repo": "agent.antonova",
+      "projectNumber": 1
+    },
+    "prioritization": {
+      "formula": "default",
+      "statuses": {
+        "backlog": [
+          "Backlog"
+        ],
+        "ready": [
+          "Todo",
+          "Ready",
+          "ready"
+        ],
+        "inProgress": [
+          "In Progress",
+          "in-progress"
+        ],
+        "blocked": [
+          "In Progress",
+          "Blocked",
+          "blocked"
+        ],
+        "review": [
+          "In Progress",
+          "Review",
+          "review"
+        ],
+        "done": [
+          "Done",
+          "done"
+        ]
+      },
+      "impactMap": {
+        "Critical": 40,
+        "High": 30,
+        "Medium": 20,
+        "Low": 10
+      },
+      "urgencyMap": {
+        "Immediate": 4,
+        "Soon": 3,
+        "Normal": 2,
+        "Eventually": 1
+      },
+      "effortMap": {
+        "XS": 1,
+        "S": 2,
+        "M": 3,
+        "L": 5,
+        "XL": 8
+      }
+    }
+  },
+  "projectId": "PVT_kwHODJE8Ss4A9RzZ",
+  "fields": {
+    "Title": {
+      "id": "PVTF_lAHODJE8Ss4A9RzZzgxBvCo",
+      "dataType": "TITLE",
+      "options": []
+    },
+    "Assignees": {
+      "id": "PVTF_lAHODJE8Ss4A9RzZzgxBvCs",
+      "dataType": "ASSIGNEES",
+      "options": []
+    },
+    "Status": {
+      "id": "PVTSSF_lAHODJE8Ss4A9RzZzgxBvC4",
+      "dataType": "SINGLE_SELECT",
+      "options": [
+        {
+          "id": "f75ad846",
+          "name": "Todo"
+        },
+        {
+          "id": "47fc9ee4",
+          "name": "In Progress"
+        },
+        {
+          "id": "98236657",
+          "name": "Done"
+        }
+      ]
+    },
+    "Labels": {
+      "id": "PVTF_lAHODJE8Ss4A9RzZzgxBvDE",
+      "dataType": "LABELS",
+      "options": []
+    },
+    "Linked pull requests": {
+      "id": "PVTF_lAHODJE8Ss4A9RzZzgxBvDM",
+      "dataType": "LINKED_PULL_REQUESTS",
+      "options": []
+    },
+    "Milestone": {
+      "id": "PVTF_lAHODJE8Ss4A9RzZzgxBvDQ",
+      "dataType": "MILESTONE",
+      "options": []
+    },
+    "Repository": {
+      "id": "PVTF_lAHODJE8Ss4A9RzZzgxBvDY",
+      "dataType": "REPOSITORY",
+      "options": []
+    },
+    "Reviewers": {
+      "id": "PVTF_lAHODJE8Ss4A9RzZzgxBvDc",
+      "dataType": "REVIEWERS",
+      "options": []
+    },
+    "Parent issue": {
+      "id": "PVTF_lAHODJE8Ss4A9RzZzgxBvDg",
+      "dataType": "PARENT_ISSUE",
+      "options": []
+    },
+    "Sub-issues progress": {
+      "id": "PVTF_lAHODJE8Ss4A9RzZzgxBvDk",
+      "dataType": "SUB_ISSUES_PROGRESS",
+      "options": []
+    },
+    "Priority Score": {
+      "id": "PVTF_lAHODJE8Ss4A9RzZzgxBvDo",
+      "dataType": "NUMBER",
+      "options": []
+    },
+    "Priority Adjustment": {
+      "id": "PVTF_lAHODJE8Ss4A9RzZzgxBvEE",
+      "dataType": "NUMBER",
+      "options": []
+    }
+  },
+  "statusGroups": {
+    "inProgress": {
+      "count": 6,
+      "samples": [
+        {
+          "number": 43,
+          "title": "Build container documentation",
+          "fields": {
+            "Title": "Build container documentation",
+            "Status": "In Progress"
+          }
+        },
+        {
+          "number": 44,
+          "title": "add a html page with the birds of New Zealand to the project",
+          "fields": {
+            "Title": "add a html page with the birds of New Zealand to the project",
+            "Status": "In Progress"
+          }
+        },
+        {
+          "number": 7,
+          "title": "Implement state persistence",
+          "fields": {
+            "Title": "Implement state persistence",
+            "Status": "In Progress"
+          }
+        }
+      ]
+    },
+    "unknown": {
+      "count": 35,
+      "samples": [
+        {
+          "number": 39,
+          "title": "Create CI/CD pipeline",
+          "fields": {
+            "Title": "Create CI/CD pipeline"
+          }
+        },
+        {
+          "number": 38,
+          "title": "Add pre-commit hooks",
+          "fields": {
+            "Title": "Add pre-commit hooks"
+          }
+        },
+        {
+          "number": 37,
+          "title": "Build code quality gates",
+          "fields": {
+            "Title": "Build code quality gates"
+          }
+        }
+      ]
+    }
+  },
+  "readyIssuesCount": 0,
+  "nextIssue": null
+}

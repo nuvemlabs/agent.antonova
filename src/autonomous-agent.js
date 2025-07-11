@@ -1,6 +1,7 @@
 import { query } from "@anthropic-ai/claude-code";
 import { IssueEngine } from './issue-engine.js';
-import { exec } from 'child_process';
+import { ClaudeExecutor } from './claude-executor.js';
+import { exec, spawn } from 'child_process';
 import { promisify } from 'util';
 
 const execAsync = promisify(exec);
@@ -11,6 +12,10 @@ const execAsync = promisify(exec);
 export class AutonomousAgent {
   constructor() {
     this.issueEngine = new IssueEngine();
+    this.claudeExecutor = new ClaudeExecutor({
+      maxTurns: parseInt(process.env.MAX_TURNS) || 15,
+      timeout: 300000 // 5 minutes
+    });
     this.isRunning = false;
     this.currentIssue = null;
     this.executionHistory = [];
@@ -114,7 +119,7 @@ export class AutonomousAgent {
   }
 
   /**
-   * Execute the work for an issue using Claude Code SDK
+   * Execute the work for an issue using Claude Executor
    */
   async executeIssue(issue) {
     console.log(`\\n⚡ Executing work for issue #${issue.number}...`);
@@ -126,31 +131,23 @@ export class AutonomousAgent {
     let success = false;
     
     try {
-      for await (const message of query({
-        prompt,
-        options: {
-          permissionMode: 'acceptAll', // Full autonomy
-          maxTurns: 15 // Allow complex operations
-        }
-      })) {
-        if (message.type === 'assistant' && message.message?.content) {
-          const textContent = message.message.content
-            .filter(item => item.type === 'text')
-            .map(item => item.text)
-            .join('\\n');
-          if (textContent) {
-            executionOutput += textContent + "\\n";
-            // Show real-time progress
-            process.stdout.write('.');
-          }
-        }
+      // Use the Claude executor with fallback strategies
+      const result = await this.claudeExecutor.execute(prompt, {
+        issueNumber: issue.number,
+        issueTitle: issue.title
+      });
+      
+      executionOutput = result.output;
+      success = true;
+      
+      // Note if simulated execution was used
+      if (result.simulated) {
+        console.log('\\n⚠️  Using simulated execution (Claude Code unavailable)');
       }
       
-      console.log('\\n✅ Execution completed');
-      success = true;
     } catch (error) {
       console.error('\\n❌ Execution failed:', error.message);
-      executionOutput += `\\nError: ${error.message}`;
+      executionOutput = `Error: ${error.message}`;
       success = false;
     }
     
